@@ -1,0 +1,148 @@
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  box-shadow: var(--shadow);
+
+  &--compact {
+    padding: 16px 20px;
+  }
+
+  &--accent {
+    border-left: 3px solid var(--primary);
+  }
+
+  &--success {
+    border-left: 3px solid var(--success);
+  }
+
+  &--error {
+    border-left: 3px solid var(--error);
+  }
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-light);
+
+  .card-subtitle {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--ink-tertiary);
+    margin-left: 8px;
+  }
+}
+
+.card-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.card-stat {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+
+  .stat-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--ink-tertiary);
+    margin-bottom: 2px;
+  }
+
+  .stat-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+}
+
+.preview-card-outer {
+  background: var(--white);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.issue-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .issue-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .issue-key-badge {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary);
+    background: var(--primary-bg);
+    padding: 4px 10px;
+    border-radius: var(--radius-xs);
+    letter-spacing: 0.5px;
+  }
+
+  .issue-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border-light);
+    width: 100%;
+    margin: 4px 0;
+  }
+
+  .issue-properties {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .property-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+
+    .property-label {
+      color: var(--ink-tertiary);
+      font-weight: 500;
+    }
+
+    .property-value {
+      color: var(--ink);
+      font-weight: 600;
+      text-align: right;
+    }
+  }
+}

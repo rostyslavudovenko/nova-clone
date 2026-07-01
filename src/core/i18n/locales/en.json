@@ -1,0 +1,101 @@
+{
+  "app": {
+    "name": "Nova <span>Clone</span>",
+    "footer": "Nova Clone — Jira issue cloner"
+  },
+  "nav": {
+    "clone": "Clone",
+    "history": "History",
+    "about": "About",
+    "disconnect": "Disconnect",
+    "settings": "Settings"
+  },
+  "connect": {
+    "title": "Connect to Jira",
+    "desc": "Enter your Jira Cloud credentials to get started.",
+    "siteUrl": "Jira Site URL",
+    "siteUrlPlaceholder": "https://your-site.atlassian.net",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "token": "API Token",
+    "tokenPlaceholder": "Your Atlassian API token",
+    "tokenHelp": "Generate at id.atlassian.com/manage-profile/security/api-tokens",
+    "connect": "Connect",
+    "connecting": "Connecting...",
+    "error": "Connection failed",
+    "invalidUrl": "Please enter a valid Jira URL",
+    "invalidEmail": "Please enter your email",
+    "invalidToken": "Please enter your API token",
+    "connected": "Connected to {{site}}",
+    "reconnecting": "Reconnecting...",
+    "disconnected": "Disconnected"
+  },
+  "clone": {
+    "title": "Clone Issue",
+    "issueKey": "Issue Key",
+    "issueKeyPlaceholder": "Enter issue key (e.g. SPA-123) or paste URL",
+    "lookup": "Look Up",
+    "lookingUp": "Looking up...",
+    "preview": "Issue Preview",
+    "issueNotFound": "Issue not found. Check the key and try again.",
+    "targetProject": "Target Project",
+    "targetProjectPlaceholder": "Select a project...",
+    "loadingProjects": "Loading projects...",
+    "targetIssueType": "Issue Type",
+    "targetIssueTypePlaceholder": "Select issue type...",
+    "loadingTypes": "Loading issue types...",
+    "options": "Clone Options",
+    "copyComments": "Copy comments",
+    "copyAttachments": "Copy attachments",
+    "copyLinks": "Link cloned issue to original",
+    "missingFields": "Some required fields may not be mapped: {{fields}}",
+    "startClone": "Start Clone",
+    "cloning": "Cloning...",
+    "step": {
+      "fetching_source": "Fetching source issue",
+      "creating_issue": "Creating new issue",
+      "copying_comments": "Copying comments",
+      "copying_attachments": "Uploading attachments",
+      "linking_issues": "Linking issues",
+      "complete": "Clone complete"
+    },
+    "success": "Issue cloned successfully",
+    "error": "Clone failed at step: {{step}}",
+    "result": {
+      "newKey": "Created {{key}}",
+      "comments": "{{count}} comments copied",
+      "attachments": "{{count}} attachments copied",
+      "link": "Issue link created",
+      "openInBrowser": "Open in Browser",
+      "cloneAnother": "Clone Another Issue"
+    }
+  },
+  "history": {
+    "title": "Clone History",
+    "empty": "No clone history yet.",
+    "source": "Source",
+    "target": "Target",
+    "timestamp": "Date",
+    "status": "Status",
+    "actions": "Actions",
+    "open": "Open",
+    "success": "Success",
+    "failed": "Failed"
+  },
+  "confirm": {
+    "disconnect": "Disconnect from Jira?",
+    "yes": "Yes",
+    "no": "Cancel"
+  },
+  "notification": {
+    "cloneComplete": "Clone complete: {{key}}",
+    "cloneFailed": "Clone failed: {{error}}",
+    "disconnected": "Disconnected from Jira"
+  },
+  "error": {
+    "title": "Error",
+    "network": "Network error. Check your connection and try again.",
+    "auth": "Authentication failed. Check your credentials.",
+    "generic": "Something went wrong. Try again."
+  }
+}

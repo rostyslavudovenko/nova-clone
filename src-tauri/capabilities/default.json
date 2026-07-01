@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Default capabilities for Nova Clone",
+  "windows": ["main"],
+  "permissions": ["core:default", "store:default", "notification:default", "shell:allow-open"]
+}

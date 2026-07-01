@@ -1,0 +1,9 @@
+{
+  "default": {
+    "identifier": "default",
+    "description": "Default capabilities for Nova Clone",
+    "local": true,
+    "windows": ["main"],
+    "permissions": ["core:default", "store:default", "notification:default", "shell:allow-open"]
+  }
+}

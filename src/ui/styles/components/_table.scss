@@ -1,0 +1,65 @@
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead th {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-tertiary);
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 2px solid var(--border);
+
+    &:last-child {
+      text-align: right;
+    }
+  }
+
+  tbody tr {
+    transition: background 0.1s;
+
+    &:hover {
+      background: var(--paper);
+    }
+
+    &:not(:last-child) td {
+      border-bottom: 1px solid var(--border-light);
+    }
+  }
+
+  td {
+    padding: 12px;
+    font-size: 13px;
+    color: var(--ink);
+    vertical-align: middle;
+
+    &:last-child {
+      text-align: right;
+    }
+  }
+
+  .cell-key {
+    font-weight: 600;
+    color: var(--primary);
+  }
+
+  .cell-timestamp {
+    color: var(--ink-tertiary);
+    font-size: 12px;
+  }
+
+  .cell-actions {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--ink-tertiary);
+  font-size: 14px;
+}

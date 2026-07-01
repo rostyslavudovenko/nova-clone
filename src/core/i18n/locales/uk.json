@@ -1,0 +1,101 @@
+{
+  "app": {
+    "name": "Nova <span>Clone</span>",
+    "footer": "Nova Clone — клонування задач Jira"
+  },
+  "nav": {
+    "clone": "Клонувати",
+    "history": "Історія",
+    "about": "Про додаток",
+    "disconnect": "Відключитись",
+    "settings": "Налаштування"
+  },
+  "connect": {
+    "title": "Підключення до Jira",
+    "desc": "Введіть дані для підключення до Jira Cloud.",
+    "siteUrl": "URL сайту Jira",
+    "siteUrlPlaceholder": "https://your-site.atlassian.net",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "token": "API токен",
+    "tokenPlaceholder": "Ваш Atlassian API токен",
+    "tokenHelp": "Створіть на id.atlassian.com/manage-profile/security/api-tokens",
+    "connect": "Підключитись",
+    "connecting": "Підключення...",
+    "error": "Помилка підключення",
+    "invalidUrl": "Введіть коректний URL Jira",
+    "invalidEmail": "Введіть ваш email",
+    "invalidToken": "Введіть ваш API токен",
+    "connected": "Підключено до {{site}}",
+    "reconnecting": "Перепідключення...",
+    "disconnected": "Відключено"
+  },
+  "clone": {
+    "title": "Клонувати задачу",
+    "issueKey": "Ключ задачі",
+    "issueKeyPlaceholder": "Введіть ключ (напр. SPA-123) або вставте URL",
+    "lookup": "Знайти",
+    "lookingUp": "Пошук...",
+    "preview": "Попередній перегляд",
+    "issueNotFound": "Задачу не знайдено. Перевірте ключ.",
+    "targetProject": "Проєкт призначення",
+    "targetProjectPlaceholder": "Виберіть проєкт...",
+    "loadingProjects": "Завантаження проєктів...",
+    "targetIssueType": "Тип задачі",
+    "targetIssueTypePlaceholder": "Виберіть тип...",
+    "loadingTypes": "Завантаження типів...",
+    "options": "Опції клонування",
+    "copyComments": "Копіювати коментарі",
+    "copyAttachments": "Копіювати вкладення",
+    "copyLinks": "Зв'язати клон з оригіналом",
+    "missingFields": "Деякі обов'язкові поля можуть бути не заповнені: {{fields}}",
+    "startClone": "Почати клонування",
+    "cloning": "Клонування...",
+    "step": {
+      "fetching_source": "Отримання вихідної задачі",
+      "creating_issue": "Створення нової задачі",
+      "copying_comments": "Копіювання коментарів",
+      "copying_attachments": "Завантаження вкладень",
+      "linking_issues": "Зв'язування задач",
+      "complete": "Клонування завершено"
+    },
+    "success": "Задачу успішно склоновано",
+    "error": "Помилка на етапі: {{step}}",
+    "result": {
+      "newKey": "Створено {{key}}",
+      "comments": "Скопійовано коментарів: {{count}}",
+      "attachments": "Скопійовано вкладень: {{count}}",
+      "link": "Створено зв'язок задач",
+      "openInBrowser": "Відкрити в браузері",
+      "cloneAnother": "Клонувати іншу задачу"
+    }
+  },
+  "history": {
+    "title": "Історія клонувань",
+    "empty": "Історія клонувань порожня.",
+    "source": "Джерело",
+    "target": "Результат",
+    "timestamp": "Дата",
+    "status": "Статус",
+    "actions": "Дії",
+    "open": "Відкрити",
+    "success": "Успішно",
+    "failed": "Помилка"
+  },
+  "confirm": {
+    "disconnect": "Відключитись від Jira?",
+    "yes": "Так",
+    "no": "Скасувати"
+  },
+  "notification": {
+    "cloneComplete": "Клонування завершено: {{key}}",
+    "cloneFailed": "Помилка клонування: {{error}}",
+    "disconnected": "Відключено від Jira"
+  },
+  "error": {
+    "title": "Помилка",
+    "network": "Мережева помилка. Перевірте з'єднання.",
+    "auth": "Помилка автентифікації. Перевірте дані.",
+    "generic": "Щось пішло не так. Спробуйте ще раз."
+  }
+}

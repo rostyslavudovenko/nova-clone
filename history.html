@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clone History — Nova Clone</title>
+  </head>
+  <body>
+    <div class="main-layout">
+      <aside class="sidebar">
+        <div class="sidebar-logo">
+          <div class="logo-icon">N</div>
+          <div class="logo-text" data-i18n="app.name">Nova <span>Clone</span></div>
+        </div>
+        <nav class="sidebar-nav">
+          <div class="nav-group">
+            <div class="nav-group-label">General</div>
+            <a class="nav-item" href="/" id="nav-clone" data-i18n="nav.clone">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" />
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+              </svg>
+              Clone
+            </a>
+          </div>
+          <div class="nav-group">
+            <div class="nav-group-label">Tools</div>
+            <a class="nav-item active" href="/history.html" id="nav-history" data-i18n="nav.history">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12,6 12,12 16,14" />
+              </svg>
+              History
+            </a>
+          </div>
+        </nav>
+        <div class="sidebar-footer">Nova Clone v0.1.0</div>
+      </aside>
+
+      <div class="main-content">
+        <header class="topbar">
+          <div class="topbar-left">
+            <h1 class="page-title" data-i18n="history.title">Clone History</h1>
+          </div>
+          <div class="topbar-right"></div>
+        </header>
+
+        <div class="main-scroll">
+          <div class="main-container">
+            <div class="card history-page">
+              <div class="history-header">
+                <div class="card-title" data-i18n="history.title">Clone History</div>
+              </div>
+              <table class="history-table" id="history-table">
+                <thead>
+                  <tr>
+                    <th data-i18n="history.source">Source</th>
+                    <th data-i18n="history.target">Target</th>
+                    <th data-i18n="history.timestamp">Date</th>
+                    <th data-i18n="history.status">Status</th>
+                    <th data-i18n="history.actions">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="history-body"></tbody>
+              </table>
+              <div class="history-empty" id="history-empty" data-i18n="history.empty">No clone history yet.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="src/history.ts"></script>
+  </body>
+</html>

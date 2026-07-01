@@ -1,0 +1,42 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --ink: #1a1a2e;
+  --ink-secondary: #58587a;
+  --ink-tertiary: #9292b0;
+  --paper: #f9fafb;
+  --white: #ffffff;
+  --border: #e2e4ea;
+  --border-light: #f0f1f3;
+  --shadow: 0 1px 3px rgba(26, 26, 46, 0.08), 0 1px 2px rgba(26, 26, 46, 0.04);
+  --shadow-md: 0 4px 12px rgba(26, 26, 46, 0.08);
+  --shadow-lg: 0 8px 24px rgba(26, 26, 46, 0.12);
+
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --primary-dim: #c7d2fe;
+  --primary-bg: #eef2ff;
+  --secondary: #14b8a6;
+  --secondary-dim: #99f6e4;
+  --secondary-bg: #f0fdfa;
+
+  --success: #22c55e;
+  --success-bg: #dcfce7;
+  --error: #ef4444;
+  --error-bg: #fee2e2;
+  --warning: #f59e0b;
+  --warning-bg: #fef3c7;
+  --info: #6366f1;
+  --info-bg: #eef2ff;
+
+  --sidebar-bg: var(--white);
+  --sidebar-width: 240px;
+  --topbar-height: 60px;
+
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "SF Mono", "Monaco", "Inconsolata", "Fira Code", monospace;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+}
