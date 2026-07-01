@@ -123,6 +123,15 @@
   background: var(--border-light);
 }
 
+.sidebar-footer a {
+  color: var(--ink-tertiary);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--primary);
+  }
+}
+
 .sidebar-footer-links {
   font-size: 11px;
 
