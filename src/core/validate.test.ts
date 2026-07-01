@@ -5,7 +5,7 @@ import type { CloneConfig, IssueTypeMeta } from "./state";
 describe("validateCloneConfig", () => {
   it("returns no errors for valid config with issue", () => {
     const config: CloneConfig = {
-      sourceIssueKey: "SPA-123",
+      sourceIssueKey: "ABC-123",
       targetProjectKey: "PROJ",
       targetIssueTypeId: "10001",
       copyComments: true,
@@ -34,7 +34,7 @@ describe("validateCloneConfig", () => {
 
   it("returns error for missing target project", () => {
     const config: CloneConfig = {
-      sourceIssueKey: "SPA-123",
+      sourceIssueKey: "ABC-123",
       targetProjectKey: "",
       targetIssueTypeId: "10001",
       copyComments: true,
@@ -48,7 +48,7 @@ describe("validateCloneConfig", () => {
 
   it("returns error for missing target issue type", () => {
     const config: CloneConfig = {
-      sourceIssueKey: "SPA-123",
+      sourceIssueKey: "ABC-123",
       targetProjectKey: "PROJ",
       targetIssueTypeId: "",
       copyComments: true,

@@ -33,7 +33,7 @@
   "clone": {
     "title": "Клонувати задачу",
     "issueKey": "Ключ задачі",
-    "issueKeyPlaceholder": "Введіть ключ (напр. SPA-123) або вставте URL",
+    "issueKeyPlaceholder": "Введіть ключ (напр. ABC-123) або вставте URL",
     "lookup": "Знайти",
     "lookingUp": "Пошук...",
     "preview": "Попередній перегляд",

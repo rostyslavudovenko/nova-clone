@@ -33,7 +33,7 @@
   "clone": {
     "title": "Clone Issue",
     "issueKey": "Issue Key",
-    "issueKeyPlaceholder": "Enter issue key (e.g. SPA-123) or paste URL",
+    "issueKeyPlaceholder": "Enter issue key (e.g. ABC-123) or paste URL",
     "lookup": "Look Up",
     "lookingUp": "Looking up...",
     "preview": "Issue Preview",

@@ -3,7 +3,7 @@ import { parseIssueKey } from "./state";
 
 describe("parseIssueKey", () => {
   it("extracts key from plain issue key input", () => {
-    expect(parseIssueKey("SPA-123")).toBe("SPA-123");
+    expect(parseIssueKey("ABC-123")).toBe("ABC-123");
   });
 
   it("extracts key from URL", () => {
