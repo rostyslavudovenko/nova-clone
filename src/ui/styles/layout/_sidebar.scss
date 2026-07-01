@@ -115,3 +115,23 @@
   color: var(--ink-tertiary);
   text-align: center;
 }
+
+.sidebar-footer-divider {
+  margin: 4px auto 4px;
+  width: 223px;
+  height: 1px;
+  background: var(--border-light);
+}
+
+.sidebar-footer-links {
+  font-size: 11px;
+
+  a {
+    color: var(--ink-tertiary);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--primary);
+    }
+  }
+}
