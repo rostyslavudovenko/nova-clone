@@ -104,6 +104,7 @@ async function init() {
   try {
     await setupI18n();
     updateUI();
+    document.documentElement.style.visibility = "";
     await renderList();
   } catch (error) {
     const msg = error instanceof Error ? error.message : "Unknown error";
