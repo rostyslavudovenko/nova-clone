@@ -15,13 +15,13 @@
   flex: 1;
   overflow-y: auto;
   min-height: 0;
-  scrollbar-gutter: stable;
+  scrollbar-gutter: stable both-edges;
 }
 
 .main-container {
   max-width: 900px;
   margin: 0 auto;
-  padding: 28px 32px;
+  padding: 28px;
   display: flex;
   flex-direction: column;
   gap: 20px;
