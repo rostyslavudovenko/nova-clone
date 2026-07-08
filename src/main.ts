@@ -485,6 +485,15 @@ btnRetry.addEventListener("click", () => {
   btnClone.click();
 });
 
+// ─── Nav ─────────────────────────────────────────────
+document.querySelectorAll<HTMLAnchorElement>(".sidebar-nav .nav-item").forEach((link) => {
+  link.addEventListener("click", (e) => {
+    if (link.classList.contains("active")) {
+      e.preventDefault();
+    }
+  });
+});
+
 // ─── Init ────────────────────────────────────────────
 async function init() {
   try {

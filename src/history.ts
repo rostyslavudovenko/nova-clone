@@ -100,6 +100,15 @@ function extractSite(entry: HistoryEntry): string {
   return "your-site.atlassian.net";
 }
 
+// ─── Nav ─────────────────────────────────────────────
+document.querySelectorAll<HTMLAnchorElement>(".sidebar-nav .nav-item").forEach((link) => {
+  link.addEventListener("click", (e) => {
+    if (link.classList.contains("active")) {
+      e.preventDefault();
+    }
+  });
+});
+
 async function init() {
   try {
     await setupI18n();
