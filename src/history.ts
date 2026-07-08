@@ -2,6 +2,7 @@ import "./ui/styles/main.scss";
 import { getHistory } from "./core/jira-client";
 import type { HistoryEntry } from "./core/state";
 import { setupI18n, updateUI, t } from "./core/i18n/i18n";
+import { initConnectionUI, checkConnection } from "./core/connection-ui";
 import { showError } from "./core/errors";
 import { open } from "@tauri-apps/plugin-shell";
 
@@ -113,6 +114,8 @@ async function init() {
   try {
     await setupI18n();
     updateUI();
+    initConnectionUI();
+    await checkConnection();
     document.documentElement.style.visibility = "";
     await renderList();
   } catch (error) {

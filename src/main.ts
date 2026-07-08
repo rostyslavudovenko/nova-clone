@@ -1,10 +1,10 @@
 import "./ui/styles/main.scss";
 import { store } from "./core/store";
 import { parseIssueKey, type ProgressEvent, type JiraIssue, type CloneResult } from "./core/state";
+import { initConnectionUI } from "./core/connection-ui";
 import {
   validateConnection,
   getConnectionStatus,
-  disconnect,
   fetchIssue,
   fetchProjects,
   fetchCreatemeta,
@@ -27,9 +27,6 @@ const inputEmail = $("input-email") as HTMLInputElement;
 const inputToken = $("input-token") as HTMLInputElement;
 const btnConnect = $("btn-connect") as HTMLButtonElement;
 const connectError = $("connect-error")!;
-const connectionStatus = $("connection-status")!;
-const connectionInfo = $("connection-info")!;
-const btnDisconnect = $("btn-disconnect") as HTMLButtonElement;
 const inputIssueKey = $("input-issue-key") as HTMLInputElement;
 const btnLookup = $("btn-lookup") as HTMLButtonElement;
 const issueError = $("issue-error")!;
@@ -59,7 +56,6 @@ const resultErrorDesc = $("result-error-desc")!;
 const btnOpenBrowser = $("btn-open-browser") as HTMLButtonElement;
 const btnCloneAnother = $("btn-clone-another") as HTMLButtonElement;
 const btnRetry = $("btn-retry") as HTMLButtonElement;
-const topbarContent = $("topbar-content")!;
 
 // ─── State helpers ───────────────────────────────────
 function show(view: HTMLElement) {
@@ -94,19 +90,14 @@ async function checkConnection() {
 }
 
 function showConnectedUI() {
-  const conn = store.state.connection;
   hide(connectView);
   show(cloneView);
-  show(connectionStatus);
-  connectionInfo.textContent = conn?.email ?? "";
-  topbarContent.innerHTML = `<span style="font-size: 12px; color: var(--ink-tertiary);">${conn?.siteUrl ?? ""}</span>`;
   loadProjects();
 }
 
 function showDisconnectedUI() {
   show(connectView);
   hide(cloneView);
-  hide(connectionStatus);
   hide(progressSection);
   hide(resultSection);
   hide(issuePreviewSection);
@@ -151,19 +142,6 @@ btnConnect.addEventListener("click", async () => {
     connectError.classList.remove("hidden");
   } finally {
     setButtonLoading(btnConnect, false);
-  }
-});
-
-// ─── Disconnect ──────────────────────────────────────
-btnDisconnect.addEventListener("click", async () => {
-  try {
-    await disconnect();
-    store.setConnection(null);
-    store.setConnectionStatus("disconnected");
-    showDisconnectedUI();
-    showToast(t("notification.disconnected"), "info");
-  } catch (error) {
-    showError("Disconnect", error instanceof Error ? error.message : "Failed to disconnect");
   }
 });
 
@@ -499,6 +477,7 @@ async function init() {
   try {
     await setupI18n();
     updateUI();
+    initConnectionUI();
     document.documentElement.style.visibility = "";
     await checkConnection();
   } catch (error) {
