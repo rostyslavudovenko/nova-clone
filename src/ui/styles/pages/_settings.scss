@@ -1,0 +1,56 @@
+.settings-card {
+  height: fit-content;
+}
+
+.settings-desc {
+  font-size: 13px;
+  color: var(--ink-tertiary);
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+.settings-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-light);
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+
+  .settings-field-label {
+    font-size: 13px;
+    color: var(--ink-tertiary);
+    font-weight: 500;
+  }
+
+  .settings-field-value {
+    font-size: 13px;
+    color: var(--ink);
+    font-weight: 600;
+    text-align: right;
+    max-width: 60%;
+    word-break: break-all;
+  }
+}
+
+.settings-select {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  background: var(--white);
+  color: var(--ink);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s;
+
+  &:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-bg);
+  }
+}

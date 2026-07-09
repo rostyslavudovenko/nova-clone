@@ -8,6 +8,11 @@
     "history": "History",
     "about": "About",
     "disconnect": "Disconnect",
+    "settings": "Settings",
+    "general": "General"
+  },
+  "navGroup": {
+    "general": "General",
     "settings": "Settings"
   },
   "connect": {
@@ -97,5 +102,24 @@
     "network": "Network error. Check your connection and try again.",
     "auth": "Authentication failed. Check your credentials.",
     "generic": "Something went wrong. Try again."
+  },
+  "settings": {
+    "title": "Settings",
+    "account": {
+      "title": "Account",
+      "connected": "Connected",
+      "disconnected": "Not connected",
+      "email": "Email",
+      "site": "Site",
+      "connectedSince": "Connected since",
+      "disconnect": "Disconnect",
+      "notConnected": "No account connected"
+    },
+    "language": {
+      "title": "Language",
+      "description": "Choose your preferred language",
+      "en": "English",
+      "uk": "Українська"
+    }
   }
 }

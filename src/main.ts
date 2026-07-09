@@ -132,7 +132,9 @@ btnConnect.addEventListener("click", async () => {
 
   try {
     await validateConnection(siteUrl, email, token);
-    store.setConnection({ siteUrl, email });
+    const connectedAt = new Date().toISOString();
+    localStorage.setItem("nova-clone-connected-at", connectedAt);
+    store.setConnection({ siteUrl, email, connectedAt });
     store.setConnectionStatus("connected");
     showConnectedUI();
     showToast(t("connect.connected", { site: siteUrl }), "success");

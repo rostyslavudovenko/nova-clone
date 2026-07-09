@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Clone History — Nova Clone</title>
+    <title>Settings — Nova Clone</title>
     <script>document.documentElement.style.visibility="hidden"</script>
   </head>
   <body>
@@ -23,7 +23,7 @@
               </svg>
               Clone
             </a>
-            <a class="nav-item active" href="/history.html" id="nav-history" data-i18n="nav.history">
+            <a class="nav-item" href="/history.html" id="nav-history" data-i18n="nav.history">
               <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10" />
                 <polyline points="12,6 12,12 16,14" />
@@ -33,7 +33,7 @@
           </div>
           <div class="nav-group">
             <div class="nav-group-label" data-i18n="navGroup.settings">Settings</div>
-            <a class="nav-item" href="/settings.html" id="nav-settings" data-i18n="nav.general">
+            <a class="nav-item active" href="/settings.html" id="nav-settings" data-i18n="nav.general">
               <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="3" />
                 <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
@@ -76,27 +76,51 @@
 
         <div class="main-scroll">
           <div class="main-container">
-            <div class="card history-page">
-              <div class="card-title" data-i18n="history.title">Clone History</div>
-              <table class="history-table" id="history-table">
-                <thead>
-                  <tr>
-                    <th data-i18n="history.source">Source</th>
-                    <th data-i18n="history.target">Target</th>
-                    <th data-i18n="history.timestamp">Date</th>
-                    <th data-i18n="history.status">Status</th>
-                    <th data-i18n="history.actions">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="history-body"></tbody>
-              </table>
-              <div class="history-empty" id="history-empty" data-i18n="history.empty">No clone history yet.</div>
+            <div class="grid-2">
+              <!-- Account Card -->
+              <div class="card settings-card" id="account-card">
+                <div class="card-title" data-i18n="settings.account.title">Account</div>
+                <div id="account-connected">
+                  <div class="settings-field">
+                    <span class="settings-field-label" data-i18n="settings.account.email">Email</span>
+                    <span class="settings-field-value" id="account-email">—</span>
+                  </div>
+                  <div class="settings-field">
+                    <span class="settings-field-label" data-i18n="settings.account.site">Site</span>
+                    <span class="settings-field-value" id="account-site">—</span>
+                  </div>
+                  <div class="settings-field">
+                    <span class="settings-field-label" data-i18n="settings.account.connectedSince">Connected since</span>
+                    <span class="settings-field-value" id="account-connected-since">—</span>
+                  </div>
+                  <div class="settings-field">
+                    <span class="settings-field-label">Status</span>
+                    <span class="settings-field-value">
+                      <span class="badge badge--success" id="account-status-badge" data-i18n="settings.account.connected">Connected</span>
+                    </span>
+                  </div>
+                  <button class="btn btn-danger btn-full" id="btn-account-disconnect" data-i18n="settings.account.disconnect" style="margin-top: 20px;">Disconnect</button>
+                </div>
+                <div id="account-disconnected" class="hidden">
+                  <p style="color: var(--ink-tertiary); font-size: 13px; text-align: center; margin: 20px 0;" data-i18n="settings.account.notConnected">No account connected</p>
+                </div>
+              </div>
+
+              <!-- Language Card -->
+              <div class="card settings-card">
+                <div class="card-title" data-i18n="settings.language.title">Language</div>
+                <p class="settings-desc" data-i18n="settings.language.description">Choose your preferred language</p>
+                <select id="language-select" class="settings-select">
+                  <option value="en" data-i18n="settings.language.en">English</option>
+                  <option value="uk" data-i18n="settings.language.uk">Українська</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <script type="module" src="src/history.ts"></script>
+    <script type="module" src="src/settings.ts"></script>
   </body>
 </html>

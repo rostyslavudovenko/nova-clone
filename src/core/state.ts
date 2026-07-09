@@ -1,6 +1,7 @@
 export interface ConnectionConfig {
   siteUrl: string;
   email: string;
+  connectedAt?: string;
 }
 
 export interface JiraIssue {
