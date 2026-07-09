@@ -1,48 +1,24 @@
-<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#f0f2fa"/>
-    </linearGradient>
-    <linearGradient id="arrowPurple" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#8f6cf0"/>
-      <stop offset="100%" stop-color="#5a3bd6"/>
-    </linearGradient>
-    <linearGradient id="arrowTeal" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#4fe0c9"/>
-      <stop offset="100%" stop-color="#2fb4c6"/>
-    </linearGradient>
-    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
-      <feGaussianBlur stdDeviation="10" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Background Elements for Depth -->
+  <rect x="140" y="140" width="744" height="744" rx="160" fill="none" stroke="#6366f1" stroke-width="48" opacity="0.4" id="rect_0_glis7"></rect>
 
-  <!-- Background -->
-  <rect x="0" y="0" width="1024" height="1024" fill="url(#bg)"/>
+  <!-- Main Clone Layer (Back) -->
+  <rect x="222" y="222" width="744" height="744" rx="160" fill="#a5b4fc" stroke="#1a1a2e" stroke-width="48" id="rect_1_glis7"></rect>
 
-  <!-- Two arrows curving in opposite directions, forming a cycle (clone/sync motif) -->
-  <g filter="url(#glow)">
-    <!-- Top arc: purple, curves left-to-right. Flat (butt) caps so the line meets the arrowhead cleanly -->
-    <path d="M 260 340 C 300 180, 560 110, 740 210" fill="none" stroke="url(#arrowPurple)" stroke-width="34" stroke-linecap="butt"/>
-    <!-- Rounded tail for the top arc -->
-    <circle cx="260" cy="340" r="17" fill="#8f6cf0"/>
+  <!-- Main Clone Layer (Front) -->
+  <rect x="140" y="140" width="744" height="744" rx="160" fill="#6366f1" stroke="#1a1a2e" stroke-width="48" id="rect_2_glis7"></rect>
 
-    <!-- Bottom arc: teal, curves right-to-left. Flat (butt) caps so the line meets the arrowhead cleanly -->
-    <path d="M 764 520 C 724 680, 464 750, 284 650" fill="none" stroke="url(#arrowTeal)" stroke-width="34" stroke-linecap="butt"/>
-    <!-- Rounded tail for the bottom arc -->
-    <circle cx="764" cy="520" r="17" fill="#2fb4c6"/>
-  </g>
+  <!-- Central Nova Star -->
+  <path d="M512 289 L557 438 L705 482 L557 527 L512 676 L467 527 L319 482 L467 438 Z" fill="#ffffff" stroke="#1b148e" stroke-width="36" stroke-linejoin="round" id="path_3_glis7"></path>
 
-  <!-- Arrowhead for top (purple) path: base flares wider than the line for a classic arrow look -->
-  <polygon points="799.4,243.0 726.4,234.5 753.6,185.5" fill="url(#arrowPurple)"/>
-  <!-- Arrowhead for bottom (teal) path: base flares wider than the line for a classic arrow look -->
-  <polygon points="224.6,617.0 297.6,625.5 270.4,674.5" fill="url(#arrowTeal)"/>
+  <!-- Accent Stars (Nova Effect) -->
+  <!-- Top Right -->
+  <path d="M860 77 L888 147 L958 175 L888 203 L860 273 L832 203 L762 175 L832 147 Z" fill="#ffffff" stroke="#1b148e" stroke-width="28" stroke-linejoin="round" id="path_4_glis7"></path>
 
-  <!-- Wordmark, placed in the open space between the two arcs -->
-  <text x="512" y="452" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="86" fill="#2c2f3a" letter-spacing="4">NOVA</text>
-  <text x="512" y="500" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="400" font-size="36" fill="#5a5f6e" letter-spacing="12">CLONE</text>
+  <!-- Bottom Left -->
+  <path d="M160 810 L181 859 L230 880 L181 901 L160 950 L139 901 L90 880 L139 859 Z" fill="#ffffff" stroke="#1b148e" stroke-width="28" stroke-linejoin="round" id="path_5_glis7"></path>
+
+  <!-- Small Sparkle Stars -->
+  <path d="M880 712 L896 744 L928 760 L896 776 L880 808 L864 776 L832 760 L864 744 Z" fill="#ffffff" stroke="#1b148e" stroke-width="20" stroke-linejoin="round" id="circle_6_glis7"></path>
+  <path d="M110 82 L119 101 L138 110 L119 119 L110 138 L101 119 L82 110 L101 101 Z" fill="#ffffff" stroke="#1b148e" stroke-width="14" stroke-linejoin="round" id="circle_7_glis7"></path>
 </svg>
