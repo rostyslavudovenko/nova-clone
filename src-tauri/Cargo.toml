@@ -1,6 +1,6 @@
 [package]
 name = "nova-clone"
-version = "0.1.0"
+version = "0.1.1"
 description = "Nova Clone — Jira Cloud issue cloner"
 authors = ["Rostyslav Udovenko"]
 edition = "2021"
