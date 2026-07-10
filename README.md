@@ -101,7 +101,7 @@ The installer will be in `src-tauri/target/release/bundle/`.
 | `npm run release:minor` | Bump minor version |
 | `npm run release:major` | Bump major version |
 
-Version bumping runs `sync-version.mjs` automatically via the `version` npm lifecycle hook, which updates `package.json`, `tauri.conf.json`, `Cargo.toml`, and `Cargo.lock` in sync, and stages them in git.
+Version bumping runs `sync-version.mjs` automatically via the `version` npm lifecycle hook, which updates `package.json`, `tauri.conf.json`, `Cargo.toml`, `Cargo.lock`, and HTML files in sync, and stages them in git.
 
 ## Build Pipeline
 
