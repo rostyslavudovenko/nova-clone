@@ -76,7 +76,7 @@ async function checkConnection() {
     store.setConnectionStatus("connecting");
     const status = await getConnectionStatus();
     if (status.connected && status.site_url && status.email) {
-      store.setConnection({ siteUrl: status.site_url, email: status.email });
+      store.setConnection({ siteUrl: status.site_url, email: status.email, avatarUrl: status.avatar_url });
       store.setConnectionStatus("connected");
       showConnectedUI();
     } else {
@@ -134,7 +134,8 @@ btnConnect.addEventListener("click", async () => {
     await validateConnection(siteUrl, email, token);
     const connectedAt = new Date().toISOString();
     localStorage.setItem("nova-clone-connected-at", connectedAt);
-    store.setConnection({ siteUrl, email, connectedAt });
+    const status = await getConnectionStatus();
+    store.setConnection({ siteUrl, email, connectedAt, avatarUrl: status.avatar_url });
     store.setConnectionStatus("connected");
     showConnectedUI();
     showToast(t("connect.connected", { site: siteUrl }), "success");

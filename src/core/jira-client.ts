@@ -5,6 +5,7 @@ export interface ConnectionStatus {
   connected: boolean;
   site_url?: string;
   email?: string;
+  avatar_url?: string;
 }
 
 export async function validateConnection(siteUrl: string, email: string, token: string): Promise<void> {

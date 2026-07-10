@@ -14,6 +14,8 @@ struct StoredConnection {
   site_url: String,
   email: String,
   token: String,
+  #[serde(default)]
+  avatar_url: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -21,6 +23,7 @@ pub struct ConnectionStatus {
   pub connected: bool,
   pub site_url: Option<String>,
   pub email: Option<String>,
+  pub avatar_url: Option<String>,
 }
 
 fn get_connection(app: &AppHandle) -> Result<StoredConnection, String> {
@@ -75,12 +78,18 @@ pub async fn validate_connection(
   let client = jira::new_client();
   let result = auth::validate_credentials(&client, &site_url, &email, &token).await?;
 
+  let avatar_url = result["avatarUrls"]["48x48"]
+    .as_str()
+    .unwrap_or("")
+    .to_string();
+
   save_connection(
     &app,
     &StoredConnection {
       site_url,
       email,
       token,
+      avatar_url,
     },
   )?;
 
@@ -96,11 +105,13 @@ pub async fn get_connection_status(app: AppHandle) -> Result<ConnectionStatus, S
       connected: true,
       site_url: Some(conn.site_url),
       email: Some(conn.email),
+      avatar_url: if conn.avatar_url.is_empty() { None } else { Some(conn.avatar_url) },
     }),
     Err(_) => Ok(ConnectionStatus {
       connected: false,
       site_url: None,
       email: None,
+      avatar_url: None,
     }),
   }
 }
@@ -238,7 +249,7 @@ pub async fn get_history(app: AppHandle) -> Result<Vec<Value>, String> {
 }
 
 #[tauri::command]
-pub async fn persist_connection(app: AppHandle, mut site_url: String, email: String, token: String) -> Result<(), String> {
+pub async fn persist_connection(app: AppHandle, mut site_url: String, email: String, token: String, avatar_url: String) -> Result<(), String> {
   site_url = site_url.trim().to_string();
   if !site_url.starts_with("http://") && !site_url.starts_with("https://") {
     site_url = format!("https://{}", site_url);
@@ -249,6 +260,7 @@ pub async fn persist_connection(app: AppHandle, mut site_url: String, email: Str
       site_url,
       email,
       token,
+      avatar_url,
     },
   )
 }
