@@ -211,26 +211,7 @@ pub async fn clone_issue(
 }
 
 fn iso_now() -> String {
-  let secs = std::time::SystemTime::now()
-    .duration_since(std::time::UNIX_EPOCH)
-    .unwrap_or_default()
-    .as_secs();
-
-  let days = secs / 86400;
-  let time_secs = secs % 86400;
-  let hours = time_secs / 3600;
-  let minutes = (time_secs % 3600) / 60;
-  let seconds = time_secs % 60;
-
-  format!(
-    "{}-{:02}-{:02}T{:02}:{:02}:{:02}Z",
-    1970 + (days / 365) as u64,
-    1 + ((days % 365) / 30),
-    (days % 30) + 1,
-    hours,
-    minutes,
-    seconds
-  )
+  chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true)
 }
 
 #[tauri::command]

@@ -2314,6 +2314,7 @@ dependencies = [
 name = "nova-clone"
 version = "0.1.2"
 dependencies = [
+ "chrono",
  "log",
  "reqwest 0.12.28",
  "serde",
