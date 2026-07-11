@@ -1,3 +1,4 @@
+import { createStore } from "zustand/vanilla";
 import type {
   ConnectionConfig,
   JiraIssue,
@@ -27,8 +28,6 @@ interface AppState {
   cloneResult: CloneResult | null;
   cloneError: string | null;
 }
-
-type Listener = () => void;
 
 function createInitialCloneConfig(): CloneConfig {
   return {
@@ -61,126 +60,78 @@ function createInitialState(): AppState {
   };
 }
 
-function createStore() {
-  const _state = createInitialState();
-  const listeners = new Set<Listener>();
+const zustandStore = createStore<AppState>()(() => createInitialState());
 
-  function subscribe(fn: Listener): () => void {
-    listeners.add(fn);
-    return () => listeners.delete(fn);
-  }
-
-  function notify(): void {
-    listeners.forEach((fn) => fn());
-  }
-
-  function reset(): void {
-    const fresh = createInitialState();
-    Object.assign(_state, fresh);
-    notify();
-  }
-
-  function setConnectionStatus(status: ConnectionStatus): void {
-    _state.connectionStatus = status;
-    notify();
-  }
-
-  function setConnection(config: ConnectionConfig | null): void {
-    _state.connection = config;
-    notify();
-  }
-
-  function setConnectError(error: string | null): void {
-    _state.connectError = error;
-    notify();
-  }
-
-  function setCurrentIssue(issue: JiraIssue | null): void {
-    _state.currentIssue = issue;
-    notify();
-  }
-
-  function setProjects(projects: ProjectSummary[]): void {
-    _state.projects = projects;
-    notify();
-  }
-
-  function setIssueTypes(types: IssueTypeMeta[]): void {
-    _state.issueTypes = types;
-    notify();
-  }
-
-  function setSelectedProject(key: string | null): void {
-    _state.selectedProject = key;
-    _state.cloneConfig.targetProjectKey = key ?? "";
-    notify();
-  }
-
-  function setSelectedIssueType(id: string | null): void {
-    _state.selectedIssueType = id;
-    _state.cloneConfig.targetIssueTypeId = id ?? "";
-    notify();
-  }
-
-  function setCloneConfig(config: Partial<CloneConfig>): void {
-    Object.assign(_state.cloneConfig, config);
-    notify();
-  }
-
-  function setClonePhase(phase: ClonePhase): void {
-    _state.clonePhase = phase;
-    notify();
-  }
-
-  function addProgressEvent(event: ProgressEvent): void {
-    _state.cloneProgress.push(event);
-    notify();
-  }
-
-  function setCloneResult(result: CloneResult | null): void {
-    _state.cloneResult = result;
-    notify();
-  }
-
-  function setCloneError(error: string | null): void {
-    _state.cloneError = error;
-    notify();
-  }
-
-  function resetClone(): void {
-    _state.clonePhase = "idle";
-    _state.cloneProgress = [];
-    _state.cloneResult = null;
-    _state.cloneError = null;
-    _state.cloneConfig = createInitialCloneConfig();
-    _state.currentIssue = null;
-    _state.selectedProject = null;
-    _state.selectedIssueType = null;
-    _state.issueTypes = [];
-    notify();
-  }
-
-  return {
-    get state(): Readonly<AppState> {
-      return _state;
-    },
-    subscribe,
-    reset,
-    setConnectionStatus,
-    setConnection,
-    setConnectError,
-    setCurrentIssue,
-    setProjects,
-    setIssueTypes,
-    setSelectedProject,
-    setSelectedIssueType,
-    setCloneConfig,
-    setClonePhase,
-    addProgressEvent,
-    setCloneResult,
-    setCloneError,
-    resetClone,
-  };
-}
-
-export const store = createStore();
+export const store = {
+  get state(): Readonly<AppState> {
+    return zustandStore.getState();
+  },
+  subscribe(fn: () => void): () => void {
+    return zustandStore.subscribe(fn);
+  },
+  reset(): void {
+    zustandStore.setState(createInitialState(), true);
+  },
+  setConnectionStatus(status: ConnectionStatus): void {
+    zustandStore.setState({ connectionStatus: status });
+  },
+  setConnection(config: ConnectionConfig | null): void {
+    zustandStore.setState({ connection: config });
+  },
+  setConnectError(error: string | null): void {
+    zustandStore.setState({ connectError: error });
+  },
+  setCurrentIssue(issue: JiraIssue | null): void {
+    zustandStore.setState({ currentIssue: issue });
+  },
+  setProjects(projects: ProjectSummary[]): void {
+    zustandStore.setState({ projects });
+  },
+  setIssueTypes(types: IssueTypeMeta[]): void {
+    zustandStore.setState({ issueTypes: types });
+  },
+  setSelectedProject(key: string | null): void {
+    zustandStore.setState((state) => ({
+      selectedProject: key,
+      cloneConfig: { ...state.cloneConfig, targetProjectKey: key ?? "" },
+    }));
+  },
+  setSelectedIssueType(id: string | null): void {
+    zustandStore.setState((state) => ({
+      selectedIssueType: id,
+      cloneConfig: { ...state.cloneConfig, targetIssueTypeId: id ?? "" },
+    }));
+  },
+  setCloneConfig(config: Partial<CloneConfig>): void {
+    zustandStore.setState((state) => ({
+      cloneConfig: { ...state.cloneConfig, ...config },
+    }));
+  },
+  setClonePhase(phase: ClonePhase): void {
+    zustandStore.setState({ clonePhase: phase });
+  },
+  addProgressEvent(event: ProgressEvent): void {
+    zustandStore.setState((state) => ({
+      cloneProgress: [...state.cloneProgress, event],
+    }));
+  },
+  setCloneResult(result: CloneResult | null): void {
+    zustandStore.setState({ cloneResult: result });
+  },
+  setCloneError(error: string | null): void {
+    zustandStore.setState({ cloneError: error });
+  },
+  resetClone(): void {
+    zustandStore.setState({
+      clonePhase: "idle",
+      cloneProgress: [],
+      cloneResult: null,
+      cloneError: null,
+      cloneConfig: createInitialCloneConfig(),
+      currentIssue: null,
+      selectedProject: null,
+      selectedIssueType: null,
+      issueTypes: [],
+    });
+  },
+};

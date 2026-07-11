@@ -126,7 +126,7 @@ The Rust backend is compiled with `profile.release` optimizations:
 
 The app has three pages — clone (`index.html`), history (`history.html`), and settings (`settings.html`) — each with its own entry TS file and HTML. No frontend framework is used.
 
-- **State management:** A reactive store with subscription-based observable pattern. Pages re-render automatically when relevant state changes.
+- **State management:** A reactive store built with [Zustand](https://github.com/pmndrs/zustand) (vanilla engine) using a subscription-based observable pattern. Pages re-render automatically when relevant state changes.
 - **Backend communication:** All Jira calls go through Tauri's `invoke()` IPC bridge to Rust commands. The TypeScript layer never makes direct HTTP requests.
 - **Clone orchestration:** The Rust backend (`src-tauri/src/clone/mod.rs`) runs the full pipeline — fetch source, transform fields, create issue, copy comments, copy attachments, link issues — emitting progress events via Tauri's event system.
 - **Field transformation:** System fields (id, key, created, status, project, issuetype, reporter, assignee, etc.) are skipped. Rank fields, entity references, user arrays, and empty values are filtered out. Only `summary`, `description`, `priority.id`, and non-empty custom fields are copied.
@@ -232,6 +232,7 @@ Clone history and connection config are stored via `tauri-plugin-store` in `nova
 - **HTTP client (Rust):** [reqwest](https://github.com/seanmonstar/reqwest), used under the [MIT License](https://github.com/seanmonstar/reqwest/blob/master/LICENSE)
 - **Date/Time handling (Rust):** [chrono](https://github.com/chronotope/chrono), used under the [MIT License](https://github.com/chronotope/chrono/blob/main/LICENSE-MIT)
 - **Serialization (Rust):** [serde](https://github.com/serde-rs/serde) and [serde_json](https://github.com/serde-rs/json), used under the [MIT License](https://github.com/serde-rs/serde/blob/master/LICENSE-MIT)
+- **State management (JS/TS):** [Zustand](https://github.com/pmndrs/zustand), used under the [MIT License](https://github.com/pmndrs/zustand/blob/main/LICENSE)
 - **Tauri plugins:** [notification](https://github.com/tauri-apps/plugins-workspace/tree/v2/plugins/notification), [shell](https://github.com/tauri-apps/plugins-workspace/tree/v2/plugins/shell), and [store](https://github.com/tauri-apps/plugins-workspace/tree/v2/plugins/store), used under the [MIT License](https://github.com/tauri-apps/plugins-workspace/blob/v2/LICENSE)
 
 ## License
