@@ -28,7 +28,7 @@ writeFileSync(lockPath, updatedLock);
 console.log(`\u2713 Cargo.lock  \u2192 ${version}`);
 
 // HTML files (sidebar footer)
-const htmlFiles = ["index.html", "settings.html", "history.html"];
+const htmlFiles = ["index.html"];
 for (const file of htmlFiles) {
   const html = readFileSync(file, "utf8");
   const updatedHtml = html.replace(

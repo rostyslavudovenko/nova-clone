@@ -1,6 +1,6 @@
 import "./ui/styles/main.scss";
 import { store } from "./core/store";
-import { parseIssueKey, type ProgressEvent, type JiraIssue, type CloneResult } from "./core/state";
+import { parseIssueKey, type ProgressEvent, type JiraIssue, type CloneResult, type HistoryEntry } from "./core/state";
 import { initConnectionUI } from "./core/connection-ui";
 import {
   validateConnection,
@@ -10,9 +10,11 @@ import {
   fetchCreatemeta,
   fetchIssueTypeFields,
   cloneIssue,
+  disconnect,
+  getHistory,
 } from "./core/jira-client";
 import { notify } from "./core/notify";
-import { setupI18n, updateUI, t } from "./core/i18n/i18n";
+import { setupI18n, updateUI, switchLocale, t } from "./core/i18n/i18n";
 import { showError } from "./core/errors";
 import { showToast } from "./ui/toast";
 import { listen } from "@tauri-apps/api/event";
@@ -20,6 +22,20 @@ import { open } from "@tauri-apps/plugin-shell";
 
 // ─── DOM refs ────────────────────────────────────────
 const $ = (id: string) => document.getElementById(id);
+
+// Views and Navigation
+const navClone = $("nav-clone") as HTMLAnchorElement;
+const navHistory = $("nav-history") as HTMLAnchorElement;
+const navSettings = $("nav-settings") as HTMLAnchorElement;
+
+const viewClone = $("view-clone")!;
+const viewHistory = $("view-history")!;
+const viewSettings = $("view-settings")!;
+
+const allNavItems = [navClone, navHistory, navSettings];
+const allViews = [viewClone, viewHistory, viewSettings];
+
+// Clone & Connect flow refs
 const connectView = $("connect-view")!;
 const cloneView = $("clone-view")!;
 const inputSiteUrl = $("input-site-url") as HTMLInputElement;
@@ -57,6 +73,20 @@ const btnOpenBrowser = $("btn-open-browser") as HTMLButtonElement;
 const btnCloneAnother = $("btn-clone-another") as HTMLButtonElement;
 const btnRetry = $("btn-retry") as HTMLButtonElement;
 
+// History View refs
+const historyBody = $("history-body")!;
+const historyEmpty = $("history-empty")!;
+
+// Settings View refs
+const accountEmail = $("account-email")!;
+const accountSite = $("account-site")!;
+const accountConnectedSince = $("account-connected-since")!;
+const accountConnected = $("account-connected")!;
+const accountDisconnected = $("account-disconnected")!;
+const accountStatusBadge = $("account-status-badge")!;
+const btnDisconnect = $("btn-account-disconnect") as HTMLButtonElement;
+const languageSelect = $("language-select") as HTMLSelectElement;
+
 // ─── State helpers ───────────────────────────────────
 function show(view: HTMLElement) {
   view.classList.remove("hidden");
@@ -70,22 +100,60 @@ function setButtonLoading(btn: HTMLButtonElement, loading: boolean, labelKey?: s
   btn.textContent = loading ? t(labelKey ?? "connect.connecting") : t(labelKey ?? "connect.connect");
 }
 
+// ─── View switcher ───────────────────────────────────
+function switchView(target: "clone" | "history" | "settings") {
+  allViews.forEach((v) => hide(v));
+  allNavItems.forEach((item) => item.classList.remove("active"));
+
+  if (target === "clone") {
+    show(viewClone);
+    navClone.classList.add("active");
+  } else if (target === "history") {
+    show(viewHistory);
+    navHistory.classList.add("active");
+    renderHistoryList();
+  } else if (target === "settings") {
+    show(viewSettings);
+    navSettings.classList.add("active");
+    syncAccountUI();
+  }
+}
+
+navClone.addEventListener("click", (e) => {
+  e.preventDefault();
+  switchView("clone");
+});
+
+navHistory.addEventListener("click", (e) => {
+  e.preventDefault();
+  switchView("history");
+});
+
+navSettings.addEventListener("click", (e) => {
+  e.preventDefault();
+  switchView("settings");
+});
+
 // ─── Connection flow ─────────────────────────────────
 async function checkConnection() {
   try {
     store.setConnectionStatus("connecting");
     const status = await getConnectionStatus();
     if (status.connected && status.site_url && status.email) {
-      store.setConnection({ siteUrl: status.site_url, email: status.email, avatarUrl: status.avatar_url });
+      const connectedAt = (() => {
+        try {
+          return localStorage.getItem("nova-clone-connected-at") ?? undefined;
+        } catch {
+          return undefined;
+        }
+      })();
+      store.setConnection({ siteUrl: status.site_url, email: status.email, connectedAt, avatarUrl: status.avatar_url });
       store.setConnectionStatus("connected");
-      showConnectedUI();
     } else {
       store.setConnectionStatus("disconnected");
-      showDisconnectedUI();
     }
   } catch {
     store.setConnectionStatus("disconnected");
-    showDisconnectedUI();
   }
 }
 
@@ -104,6 +172,21 @@ function showDisconnectedUI() {
   hide(cloneConfigSection);
   connectError.classList.add("hidden");
 }
+
+// ─── Store Subscription ──────────────────────────────
+let lastConnectionStatus = store.state.connectionStatus;
+store.subscribe(() => {
+  const currentStatus = store.state.connectionStatus;
+  if (currentStatus !== lastConnectionStatus) {
+    lastConnectionStatus = currentStatus;
+    if (currentStatus === "connected") {
+      showConnectedUI();
+    } else if (currentStatus === "disconnected") {
+      showDisconnectedUI();
+    }
+  }
+  syncAccountUI();
+});
 
 // ─── Connect button ──────────────────────────────────
 btnConnect.addEventListener("click", async () => {
@@ -137,7 +220,6 @@ btnConnect.addEventListener("click", async () => {
     const status = await getConnectionStatus();
     store.setConnection({ siteUrl, email, connectedAt, avatarUrl: status.avatar_url });
     store.setConnectionStatus("connected");
-    showConnectedUI();
     showToast(t("connect.connected", { site: siteUrl }), "success");
   } catch (error) {
     const msg = typeof error === "string" ? error : error instanceof Error ? error.message : "Connection failed";
@@ -466,14 +548,150 @@ btnRetry.addEventListener("click", () => {
   btnClone.click();
 });
 
-// ─── Nav ─────────────────────────────────────────────
-document.querySelectorAll<HTMLAnchorElement>(".sidebar-nav .nav-item").forEach((link) => {
-  link.addEventListener("click", (e) => {
-    if (link.classList.contains("active")) {
-      e.preventDefault();
+// ─── Settings logic ──────────────────────────────────
+function syncAccountUI() {
+  const conn = store.state.connection;
+  if (store.state.connectionStatus === "connected" && conn) {
+    show(accountConnected);
+    hide(accountDisconnected);
+    accountEmail.textContent = conn.email ?? "—";
+    accountSite.textContent = conn.siteUrl ?? "—";
+    accountConnectedSince.textContent = conn.connectedAt ? formatTimestamp(conn.connectedAt) : "—";
+    accountStatusBadge.textContent = t("settings.account.connected");
+    accountStatusBadge.className = "badge badge--success";
+  } else {
+    hide(accountConnected);
+    show(accountDisconnected);
+  }
+}
+
+function initLanguageSelect() {
+  let currentLang = "en";
+  try {
+    currentLang = localStorage.getItem("nova-clone-lang") || "en";
+  } catch {
+    currentLang = "en";
+  }
+  languageSelect.value = currentLang;
+
+  languageSelect.addEventListener("change", async () => {
+    const lang = languageSelect.value;
+    const ok = await switchLocale(lang);
+    if (ok) {
+      syncAccountUI();
+      showToast("Language changed", "success");
     }
   });
-});
+}
+
+function initDisconnect() {
+  btnDisconnect.addEventListener("click", async () => {
+    try {
+      await disconnect();
+      store.setConnection(null);
+      store.setConnectionStatus("disconnected");
+      try {
+        localStorage.removeItem("nova-clone-connected-at");
+      } catch {
+        // ignore
+      }
+      showToast(t("notification.disconnected"), "info");
+    } catch (error) {
+      showError("Disconnect", error instanceof Error ? error.message : "Failed to disconnect");
+    }
+  });
+}
+
+// ─── History logic ───────────────────────────────────
+async function renderHistoryList(): Promise<void> {
+  let entries: HistoryEntry[];
+  try {
+    entries = await getHistory();
+  } catch (error) {
+    console.error("Failed to load history:", error);
+    entries = [];
+  }
+
+  historyBody.innerHTML = "";
+
+  if (entries.length === 0) {
+    historyEmpty.style.display = "block";
+    return;
+  }
+
+  historyEmpty.style.display = "none";
+
+  for (const entry of entries) {
+    const tr = document.createElement("tr");
+
+    const sourceTd = document.createElement("td");
+    sourceTd.className = "cell-key";
+    sourceTd.textContent = entry.source_key;
+    tr.appendChild(sourceTd);
+
+    const targetTd = document.createElement("td");
+    targetTd.className = "cell-key";
+    targetTd.textContent = entry.target_key;
+    tr.appendChild(targetTd);
+
+    const dateTd = document.createElement("td");
+    dateTd.className = "cell-timestamp";
+    dateTd.textContent = formatTimestamp(entry.timestamp);
+    tr.appendChild(dateTd);
+
+    const statusTd = document.createElement("td");
+    const badge = document.createElement("span");
+    if (entry.status === "success") {
+      badge.className = "badge badge--success";
+      badge.textContent = t("history.success");
+    } else {
+      badge.className = "badge badge--error";
+      badge.textContent = t("history.failed");
+    }
+    statusTd.appendChild(badge);
+    tr.appendChild(statusTd);
+
+    const actionsTd = document.createElement("td");
+    actionsTd.className = "cell-actions";
+    const openBtn = document.createElement("button");
+    openBtn.className = "btn btn-sm btn-ghost";
+    openBtn.textContent = t("history.open");
+    openBtn.addEventListener("click", () => {
+      const site = extractSite(entry);
+      const url = site.startsWith("http")
+        ? `${site}/browse/${entry.target_key}`
+        : `https://${site}/browse/${entry.target_key}`;
+      open(url);
+    });
+    actionsTd.appendChild(openBtn);
+    tr.appendChild(actionsTd);
+
+    historyBody.appendChild(tr);
+  }
+}
+
+function formatTimestamp(iso: string | undefined): string {
+  if (!iso) return "—";
+  try {
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined, {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return iso;
+  }
+}
+
+function extractSite(entry: HistoryEntry): string {
+  if (entry.site_url) {
+    return entry.site_url;
+  }
+  return "your-site.atlassian.net";
+}
 
 // ─── Init ────────────────────────────────────────────
 async function init() {
@@ -481,6 +699,8 @@ async function init() {
     await setupI18n();
     updateUI();
     initConnectionUI();
+    initLanguageSelect();
+    initDisconnect();
     document.documentElement.style.visibility = "";
     await checkConnection();
   } catch (error) {

@@ -16,14 +16,14 @@
         <nav class="sidebar-nav">
           <div class="nav-group">
             <div class="nav-group-label" data-i18n="navGroup.general">General</div>
-            <a class="nav-item active" href="/" id="nav-clone" data-i18n="nav.clone">
+            <a class="nav-item active" href="#" id="nav-clone" data-i18n="nav.clone">
               <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" />
                 <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
               </svg>
               Clone
             </a>
-            <a class="nav-item" href="/history.html" id="nav-history" data-i18n="nav.history">
+            <a class="nav-item" href="#" id="nav-history" data-i18n="nav.history">
               <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10" />
                 <polyline points="12,6 12,12 16,14" />
@@ -33,12 +33,12 @@
           </div>
           <div class="nav-group">
             <div class="nav-group-label" data-i18n="navGroup.settings">Settings</div>
-            <a class="nav-item" href="/settings.html" id="nav-settings" data-i18n="nav.general">
+            <a class="nav-item" href="#" id="nav-settings" data-i18n="nav.settings">
               <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="3" />
                 <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
               </svg>
-              General
+              Settings
             </a>
           </div>
         </nav>
@@ -75,180 +75,244 @@
 
         <div class="main-scroll">
           <div class="main-container">
-            <!-- CONNECT VIEW -->
-            <div id="connect-view">
-              <div class="card connect-card">
-                <h2 data-i18n="connect.title">Connect to Jira</h2>
-                <p class="connect-desc" data-i18n="connect.desc">Enter your Jira Cloud credentials to get started.</p>
+            <!-- CLONE VIEW -->
+            <div id="view-clone" class="app-view">
+              <!-- CONNECT VIEW -->
+              <div id="connect-view">
+                <div class="card connect-card">
+                  <h2 data-i18n="connect.title">Connect to Jira</h2>
+                  <p class="connect-desc" data-i18n="connect.desc">Enter your Jira Cloud credentials to get started.</p>
 
-                <div class="field-group">
-                  <div>
-                    <label data-i18n="connect.siteUrl">Jira Site URL</label>
-                    <input
-                      id="input-site-url"
-                      type="url"
-                      data-i18n-placeholder="connect.siteUrlPlaceholder"
-                      placeholder="https://your-site.atlassian.net"
-                      autocomplete="url"
-                    />
+                  <div class="field-group">
+                    <div>
+                      <label data-i18n="connect.siteUrl">Jira Site URL</label>
+                      <input
+                        id="input-site-url"
+                        type="url"
+                        data-i18n-placeholder="connect.siteUrlPlaceholder"
+                        placeholder="https://your-site.atlassian.net"
+                        autocomplete="url"
+                      />
+                    </div>
+                    <div>
+                      <label data-i18n="connect.email">Email</label>
+                      <input
+                        id="input-email"
+                        type="email"
+                        data-i18n-placeholder="connect.emailPlaceholder"
+                        placeholder="you@example.com"
+                        autocomplete="email"
+                      />
+                    </div>
+                    <div>
+                      <label data-i18n="connect.token">API Token</label>
+                      <input
+                        id="input-token"
+                        type="password"
+                        data-i18n-placeholder="connect.tokenPlaceholder"
+                        placeholder="Your Atlassian API token"
+                        autocomplete="off"
+                      />
+                      <p style="font-size: 11px; color: var(--ink-tertiary); margin-top: 4px;" data-i18n="connect.tokenHelp">
+                        Generate at id.atlassian.com/manage-profile/security/api-tokens
+                      </p>
+                    </div>
+                    <button class="btn btn-primary btn-full" id="btn-connect" data-i18n="connect.connect">Connect</button>
+                    <div id="connect-error" class="connect-error hidden"></div>
                   </div>
-                  <div>
-                    <label data-i18n="connect.email">Email</label>
+                </div>
+              </div>
+
+              <!-- CLONE FLOW -->
+              <div id="clone-view" class="clone-flow hidden">
+                <!-- Issue Lookup -->
+                <div class="card" id="issue-lookup-section">
+                  <div class="card-title" data-i18n="clone.title">Clone Issue</div>
+                  <div class="input-with-button">
                     <input
-                      id="input-email"
-                      type="email"
-                      data-i18n-placeholder="connect.emailPlaceholder"
-                      placeholder="you@example.com"
-                      autocomplete="email"
+                      id="input-issue-key"
+                      data-i18n-placeholder="clone.issueKeyPlaceholder"
+                      placeholder="Enter issue key (e.g. ABC-123) or paste URL"
                     />
+                    <button class="btn btn-primary" id="btn-lookup" data-i18n="clone.lookup">Look Up</button>
                   </div>
-                  <div>
-                    <label data-i18n="connect.token">API Token</label>
-                    <input
-                      id="input-token"
-                      type="password"
-                      data-i18n-placeholder="connect.tokenPlaceholder"
-                      placeholder="Your Atlassian API token"
-                      autocomplete="off"
-                    />
-                    <p style="font-size: 11px; color: var(--ink-tertiary); margin-top: 4px;" data-i18n="connect.tokenHelp">
-                      Generate at id.atlassian.com/manage-profile/security/api-tokens
-                    </p>
+                  <div id="issue-error" class="connect-error hidden"></div>
+                </div>
+
+                <!-- Two Column Dashboard Grid -->
+                <div class="clone-grid">
+                  <!-- Left Column: Config, Progress, Result -->
+                  <div class="clone-grid-left">
+                    <!-- Clone Config -->
+                    <div id="clone-config-section" class="hidden">
+                      <div class="card">
+                        <div class="card-title">Configuration</div>
+
+                        <div class="form-row" style="margin-bottom: 16px;">
+                          <div>
+                            <label data-i18n="clone.targetProject">Target Project</label>
+                            <select id="select-project" data-i18n-placeholder="clone.targetProjectPlaceholder">
+                              <option value="" data-i18n="clone.targetProjectPlaceholder">Select a project...</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label data-i18n="clone.targetIssueType">Issue Type</label>
+                            <select id="select-issuetype" data-i18n-placeholder="clone.targetIssueTypePlaceholder">
+                              <option value="" data-i18n="clone.targetIssueTypePlaceholder">Select issue type...</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div id="missing-fields-warning" class="hidden" style="background: var(--warning-bg); border: 1px solid var(--warning); border-radius: var(--radius-xs); padding: 10px 14px; font-size: 12px; color: var(--warning); margin-bottom: 16px;"></div>
+
+                        <div class="card-title" style="margin-top: 4px;" data-i18n="clone.options">Clone Options</div>
+                        <div class="checkbox-group-card">
+                          <div class="checkbox-row">
+                            <input type="checkbox" id="chk-comments" checked />
+                            <label for="chk-comments" data-i18n="clone.copyComments">Copy comments</label>
+                          </div>
+                          <div class="checkbox-row">
+                            <input type="checkbox" id="chk-attachments" checked />
+                            <label for="chk-attachments" data-i18n="clone.copyAttachments">Copy attachments</label>
+                          </div>
+                          <div class="checkbox-row">
+                            <input type="checkbox" id="chk-links" checked />
+                            <label for="chk-links" data-i18n="clone.copyLinks">Link cloned issue to original</label>
+                          </div>
+                        </div>
+
+                        <button class="btn btn-primary btn-full" id="btn-clone" data-i18n="clone.startClone" style="margin-top: 20px;">Start Clone</button>
+                      </div>
+                    </div>
+
+                    <!-- Progress -->
+                    <div id="progress-section" class="hidden">
+                      <div class="card">
+                        <div class="card-title">Progress</div>
+                        <div class="progress-steps" id="progress-steps"></div>
+                      </div>
+                    </div>
+
+                    <!-- Result -->
+                    <div id="result-section" class="hidden">
+                      <div class="card">
+                        <div id="result-success" class="clone-result hidden">
+                          <div class="result-icon result-icon--success">&#10003;</div>
+                          <div class="result-title" data-i18n="clone.success">Issue cloned successfully</div>
+                          <div class="result-key" id="result-key"></div>
+                          <div class="result-summary" id="result-summary"></div>
+                          <div style="display: flex; gap: 8px; justify-content: center;">
+                            <button class="btn btn-primary" id="btn-open-browser" data-i18n="clone.result.openInBrowser">Open in Browser</button>
+                            <button class="btn btn-ghost" id="btn-clone-another" data-i18n="clone.result.cloneAnother">Clone Another Issue</button>
+                          </div>
+                        </div>
+                        <div id="result-error" class="clone-result hidden">
+                          <div class="result-icon result-icon--error">&#10007;</div>
+                          <div class="result-title" data-i18n="clone.error">Clone failed</div>
+                          <div class="result-desc" id="result-error-desc"></div>
+                          <button class="btn btn-primary" id="btn-retry">Retry</button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <button class="btn btn-primary btn-full" id="btn-connect" data-i18n="connect.connect">Connect</button>
-                  <div id="connect-error" class="connect-error hidden"></div>
+
+                  <!-- Right Column: Source Issue Preview -->
+                  <div class="clone-grid-right">
+                    <div id="issue-preview-section" class="hidden">
+                      <div class="card preview-card-outer">
+                        <div class="card-title" data-i18n="clone.preview">Source Issue</div>
+                        <div class="issue-detail">
+                          <div class="issue-header">
+                            <span class="issue-key-badge" id="preview-key"></span>
+                            <span class="badge" id="preview-status"></span>
+                          </div>
+                          <h3 class="issue-title" id="preview-summary"></h3>
+                          <div class="divider"></div>
+                          <div class="issue-properties">
+                            <div class="property-row">
+                              <span class="property-label">Type</span>
+                              <span class="property-value" id="preview-type"></span>
+                            </div>
+                            <div class="property-row">
+                              <span class="property-label">Reporter</span>
+                              <span class="property-value" id="preview-reporter"></span>
+                            </div>
+                            <div class="property-row">
+                              <span class="property-label">Assignee</span>
+                              <span class="property-value" id="preview-assignee"></span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <!-- CLONE FLOW -->
-            <div id="clone-view" class="clone-flow hidden">
-              <!-- Issue Lookup -->
-              <div class="card" id="issue-lookup-section">
-                <div class="card-title" data-i18n="clone.title">Clone Issue</div>
-                <div class="input-with-button">
-                  <input
-                    id="input-issue-key"
-                    data-i18n-placeholder="clone.issueKeyPlaceholder"
-                    placeholder="Enter issue key (e.g. ABC-123) or paste URL"
-                  />
-                  <button class="btn btn-primary" id="btn-lookup" data-i18n="clone.lookup">Look Up</button>
-                </div>
-                <div id="issue-error" class="connect-error hidden"></div>
+            <!-- HISTORY VIEW -->
+            <div id="view-history" class="app-view hidden">
+              <div class="card history-page">
+                <div class="card-title" data-i18n="history.title">Clone History</div>
+                <table class="history-table" id="history-table">
+                  <thead>
+                    <tr>
+                      <th data-i18n="history.source">Source</th>
+                      <th data-i18n="history.target">Target</th>
+                      <th data-i18n="history.timestamp">Date</th>
+                      <th data-i18n="history.status">Status</th>
+                      <th data-i18n="history.actions">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="history-body"></tbody>
+                </table>
+                <div class="history-empty" id="history-empty" data-i18n="history.empty">No clone history yet.</div>
               </div>
+            </div>
 
-              <!-- Two Column Dashboard Grid -->
-              <div class="clone-grid">
-                <!-- Left Column: Config, Progress, Result -->
-                <div class="clone-grid-left">
-                  <!-- Clone Config -->
-                  <div id="clone-config-section" class="hidden">
-                    <div class="card">
-                      <div class="card-title">Configuration</div>
-
-                      <div class="form-row" style="margin-bottom: 16px;">
-                        <div>
-                          <label data-i18n="clone.targetProject">Target Project</label>
-                          <select id="select-project" data-i18n-placeholder="clone.targetProjectPlaceholder">
-                            <option value="" data-i18n="clone.targetProjectPlaceholder">Select a project...</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label data-i18n="clone.targetIssueType">Issue Type</label>
-                          <select id="select-issuetype" data-i18n-placeholder="clone.targetIssueTypePlaceholder">
-                            <option value="" data-i18n="clone.targetIssueTypePlaceholder">Select issue type...</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div id="missing-fields-warning" class="hidden" style="background: var(--warning-bg); border: 1px solid var(--warning); border-radius: var(--radius-xs); padding: 10px 14px; font-size: 12px; color: var(--warning); margin-bottom: 16px;"></div>
-
-                      <div class="card-title" style="margin-top: 4px;" data-i18n="clone.options">Clone Options</div>
-                      <div class="checkbox-group-card">
-                        <div class="checkbox-row">
-                          <input type="checkbox" id="chk-comments" checked />
-                          <label for="chk-comments" data-i18n="clone.copyComments">Copy comments</label>
-                        </div>
-                        <div class="checkbox-row">
-                          <input type="checkbox" id="chk-attachments" checked />
-                          <label for="chk-attachments" data-i18n="clone.copyAttachments">Copy attachments</label>
-                        </div>
-                        <div class="checkbox-row">
-                          <input type="checkbox" id="chk-links" checked />
-                          <label for="chk-links" data-i18n="clone.copyLinks">Link cloned issue to original</label>
-                        </div>
-                      </div>
-
-                      <button class="btn btn-primary btn-full" id="btn-clone" data-i18n="clone.startClone" style="margin-top: 20px;">Start Clone</button>
+            <!-- SETTINGS VIEW -->
+            <div id="view-settings" class="app-view hidden">
+              <div class="grid-2">
+                <!-- Account Card -->
+                <div class="card settings-card" id="account-card">
+                  <div class="card-title" data-i18n="settings.account.title">Account</div>
+                  <div id="account-connected">
+                    <div class="settings-field">
+                      <span class="settings-field-label" data-i18n="settings.account.email">Email</span>
+                      <span class="settings-field-value" id="account-email">—</span>
                     </div>
+                    <div class="settings-field">
+                      <span class="settings-field-label" data-i18n="settings.account.site">Site</span>
+                      <span class="settings-field-value" id="account-site">—</span>
+                    </div>
+                    <div class="settings-field">
+                      <span class="settings-field-label" data-i18n="settings.account.connectedSince">Connected since</span>
+                      <span class="settings-field-value" id="account-connected-since">—</span>
+                    </div>
+                    <div class="settings-field">
+                      <span class="settings-field-label">Status</span>
+                      <span class="settings-field-value">
+                        <span class="badge badge--success" id="account-status-badge" data-i18n="settings.account.connected">Connected</span>
+                      </span>
+                    </div>
+                    <button class="btn btn-danger btn-full" id="btn-account-disconnect" data-i18n="settings.account.disconnect" style="margin-top: 20px;">Disconnect</button>
                   </div>
-
-                  <!-- Progress -->
-                  <div id="progress-section" class="hidden">
-                    <div class="card">
-                      <div class="card-title">Progress</div>
-                      <div class="progress-steps" id="progress-steps"></div>
-                    </div>
-                  </div>
-
-                  <!-- Result -->
-                  <div id="result-section" class="hidden">
-                    <div class="card">
-                      <div id="result-success" class="clone-result hidden">
-                        <div class="result-icon result-icon--success">&#10003;</div>
-                        <div class="result-title" data-i18n="clone.success">Issue cloned successfully</div>
-                        <div class="result-key" id="result-key"></div>
-                        <div class="result-summary" id="result-summary"></div>
-                        <div style="display: flex; gap: 8px; justify-content: center;">
-                          <button class="btn btn-primary" id="btn-open-browser" data-i18n="clone.result.openInBrowser">Open in Browser</button>
-                          <button class="btn btn-ghost" id="btn-clone-another" data-i18n="clone.result.cloneAnother">Clone Another Issue</button>
-                        </div>
-                      </div>
-                      <div id="result-error" class="clone-result hidden">
-                        <div class="result-icon result-icon--error">&#10007;</div>
-                        <div class="result-title" data-i18n="clone.error">Clone failed</div>
-                        <div class="result-desc" id="result-error-desc"></div>
-                        <button class="btn btn-primary" id="btn-retry">Retry</button>
-                      </div>
-                    </div>
+                  <div id="account-disconnected" class="hidden">
+                    <p style="color: var(--ink-tertiary); font-size: 13px; text-align: center; margin: 20px 0;" data-i18n="settings.account.notConnected">No account connected</p>
                   </div>
                 </div>
 
-                <!-- Right Column: Source Issue Preview -->
-                <div class="clone-grid-right">
-                  <div id="issue-preview-section" class="hidden">
-                    <div class="card preview-card-outer">
-                      <div class="card-title" data-i18n="clone.preview">Source Issue</div>
-                      <div class="issue-detail">
-                        <div class="issue-header">
-                          <span class="issue-key-badge" id="preview-key"></span>
-                          <span class="badge" id="preview-status"></span>
-                        </div>
-                        <h3 class="issue-title" id="preview-summary"></h3>
-                        <div class="divider"></div>
-                        <div class="issue-properties">
-                          <div class="property-row">
-                            <span class="property-label">Type</span>
-                            <span class="property-value" id="preview-type"></span>
-                          </div>
-                          <div class="property-row">
-                            <span class="property-label">Reporter</span>
-                            <span class="property-value" id="preview-reporter"></span>
-                          </div>
-                          <div class="property-row">
-                            <span class="property-label">Assignee</span>
-                            <span class="property-value" id="preview-assignee"></span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <!-- Language Card -->
+                <div class="card settings-card">
+                  <div class="card-title" data-i18n="settings.language.title">Language</div>
+                  <p class="settings-desc" data-i18n="settings.language.description">Choose your preferred language</p>
+                  <select id="language-select" class="settings-select">
+                    <option value="en" data-i18n="settings.language.en">English</option>
+                    <option value="uk" data-i18n="settings.language.uk">Українська</option>
+                  </select>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
           </div>
         </div>
       </div>

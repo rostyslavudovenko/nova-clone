@@ -24,3 +24,7 @@ a {
   background: var(--primary-dim);
   color: var(--ink);
 }
+
+.hidden {
+  display: none !important;
+}

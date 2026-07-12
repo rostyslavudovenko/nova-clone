@@ -105,12 +105,10 @@ Version bumping runs `sync-version.mjs` automatically via the `version` npm life
 
 ## Build Pipeline
 
-The frontend is built with **Vite 8** as a multi-page app with three entry points:
+The frontend is built with **Vite 8** as a single-page app with one entry point:
 
 ```
-index.html    → main.ts     (connect + clone flow)
-history.html  → history.ts  (clone history)
-settings.html → settings.ts (account, language)
+index.html → main.ts (connect, clone, history, settings — view switching via CSS)
 ```
 
 - All TypeScript is transpiled by Vite's esbuild-based pipeline
@@ -124,7 +122,7 @@ The Rust backend is compiled with `profile.release` optimizations:
 
 ## Architecture
 
-The app has three pages — clone (`index.html`), history (`history.html`), and settings (`settings.html`) — each with its own entry TS file and HTML. No frontend framework is used.
+The app is a single-page application — clone, history, and settings views live in `index.html` and are toggled via CSS class switching. No frontend framework is used.
 
 - **State management:** A reactive store built with [Zustand](https://github.com/pmndrs/zustand) (vanilla engine) using a subscription-based observable pattern. Pages re-render automatically when relevant state changes.
 - **Backend communication:** All Jira calls go through Tauri's `invoke()` IPC bridge to Rust commands. The TypeScript layer never makes direct HTTP requests.
@@ -203,12 +201,8 @@ nova-clone/
 │   │       ├── themes/              # CSS variables (--primary: #6366f1)
 │   │       └── main.scss            # SCSS entry point
 │   ├── vite-env.d.ts                # Type declarations
-│   ├── main.ts                      # Main page logic (connect + clone flow)
-│   ├── history.ts                   # Clone history page logic
-│   └── settings.ts                  # Settings page logic
-├── index.html                       # Connect + clone page
-├── history.html                     # Clone history page
-├── settings.html                    # Settings page
+│   └── main.ts                      # App logic (connect, clone, history, settings)
+├── index.html                       # Single-page app (all views)
 ├── sync-version.mjs                 # Version sync script across all config files
 ├── package.json
 ├── tsconfig.json                    # TypeScript configuration
