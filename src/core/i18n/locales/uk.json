@@ -46,7 +46,7 @@
     "targetProject": "Проєкт призначення",
     "targetProjectPlaceholder": "Виберіть проєкт...",
     "loadingProjects": "Завантаження проєктів...",
-    "targetIssueType": "Тип задачі",
+    "targetIssueType": "Тип задачі призначення",
     "targetIssueTypePlaceholder": "Виберіть тип...",
     "loadingTypes": "Завантаження типів...",
     "options": "Опції клонування",

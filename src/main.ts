@@ -161,7 +161,7 @@ btnLookup.addEventListener("click", async () => {
   }
 
   issueError.classList.add("hidden");
-  setButtonLoading(btnLookup, true, "clone.lookUp");
+  setButtonLoading(btnLookup, true, "clone.lookup");
 
   try {
     const issue = await fetchIssue(key);
@@ -178,7 +178,7 @@ btnLookup.addEventListener("click", async () => {
     hide(issuePreviewSection);
     hide(cloneConfigSection);
   } finally {
-    setButtonLoading(btnLookup, false, "clone.lookUp");
+    setButtonLoading(btnLookup, false, "clone.lookup");
   }
 });
 

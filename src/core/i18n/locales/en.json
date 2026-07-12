@@ -46,7 +46,7 @@
     "targetProject": "Target Project",
     "targetProjectPlaceholder": "Select a project...",
     "loadingProjects": "Loading projects...",
-    "targetIssueType": "Issue Type",
+    "targetIssueType": "Target Issue Type",
     "targetIssueTypePlaceholder": "Select issue type...",
     "loadingTypes": "Loading issue types...",
     "options": "Clone Options",
