@@ -8,11 +8,6 @@
     "about": "About",
     "settings": "Settings"
   },
-  "navGroup": {
-    "general": "General",
-    "settings": "Preferences",
-    "help": "Help"
-  },
   "connect": {
     "title": "Connect to Jira",
     "desc": "Enter your Jira Cloud credentials to get started.",
