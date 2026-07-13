@@ -27,13 +27,15 @@ const $ = (id: string) => document.getElementById(id);
 const navClone = $("nav-clone") as HTMLAnchorElement;
 const navHistory = $("nav-history") as HTMLAnchorElement;
 const navSettings = $("nav-settings") as HTMLAnchorElement;
+const navAbout = $("nav-about") as HTMLAnchorElement;
 
 const viewClone = $("view-clone")!;
 const viewHistory = $("view-history")!;
 const viewSettings = $("view-settings")!;
+const viewAbout = $("view-about")!;
 
-const allNavItems = [navClone, navHistory, navSettings];
-const allViews = [viewClone, viewHistory, viewSettings];
+const allNavItems = [navClone, navHistory, navSettings, navAbout];
+const allViews = [viewClone, viewHistory, viewSettings, viewAbout];
 
 // Clone & Connect flow refs
 const connectView = $("connect-view")!;
@@ -101,7 +103,7 @@ function setButtonLoading(btn: HTMLButtonElement, loading: boolean, labelKey?: s
 }
 
 // ─── View switcher ───────────────────────────────────
-function switchView(target: "clone" | "history" | "settings") {
+function switchView(target: "clone" | "history" | "settings" | "about") {
   allViews.forEach((v) => hide(v));
   allNavItems.forEach((item) => item.classList.remove("active"));
 
@@ -116,6 +118,9 @@ function switchView(target: "clone" | "history" | "settings") {
     show(viewSettings);
     navSettings.classList.add("active");
     syncAccountUI();
+  } else if (target === "about") {
+    show(viewAbout);
+    navAbout.classList.add("active");
   }
 }
 
@@ -132,6 +137,11 @@ navHistory.addEventListener("click", (e) => {
 navSettings.addEventListener("click", (e) => {
   e.preventDefault();
   switchView("settings");
+});
+
+navAbout.addEventListener("click", (e) => {
+  e.preventDefault();
+  switchView("about");
 });
 
 // ─── Connection flow ─────────────────────────────────

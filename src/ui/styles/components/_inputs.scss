@@ -7,7 +7,6 @@ label {
 }
 
 input,
-textarea,
 select {
   width: 100%;
   font-family: var(--font);
@@ -29,12 +28,6 @@ select {
   &::placeholder {
     color: var(--ink-tertiary);
   }
-}
-
-textarea {
-  resize: vertical;
-  min-height: 60px;
-  height: auto;
 }
 
 select {

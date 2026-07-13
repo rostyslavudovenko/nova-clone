@@ -37,13 +37,6 @@
     font-weight: 600;
   }
 
-  &--pending {
-    .step-icon {
-      border-color: var(--border);
-      color: var(--border);
-    }
-  }
-
   &--active {
     color: var(--ink);
 

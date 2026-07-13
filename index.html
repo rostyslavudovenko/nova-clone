@@ -41,20 +41,18 @@
               Settings
             </a>
           </div>
-        </nav>
-        <div class="sidebar-footer">
-          <div>&copy; 2026 Nova Clone</div>
-          <div><a href="https://github.com/rostyslavudovenko/nova-clone/blob/main/LICENSE" target="_blank">Licensed under the MIT License</a> &middot; v0.2.0</div>
-          <div>Developed with &hearts; by Rostyslav Udovenko</div>
-          <div class="sidebar-footer-divider"></div>
-          <div class="sidebar-footer-links">
-            <a href="https://github.com/rostyslavudovenko/nova-clone" target="_blank">GitHub</a>
-            &middot;
-            <a href="https://github.com/rostyslavudovenko/nova-clone/issues" target="_blank">Feedback</a>
-            &middot;
-            <a href="mailto:rostyslavudovenko@icloud.com">Contact me</a>
+          <div class="nav-group">
+            <div class="nav-group-label" data-i18n="navGroup.help">Help</div>
+            <a class="nav-item" href="#" id="nav-about" data-i18n="nav.about">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              About
+            </a>
           </div>
-        </div>
+        </nav>
       </aside>
 
       <div class="main-content">
@@ -310,6 +308,26 @@
                     <option value="en" data-i18n="settings.language.en">English</option>
                     <option value="uk" data-i18n="settings.language.uk">Українська</option>
                   </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- ABOUT VIEW -->
+            <div id="view-about" class="app-view hidden">
+              <div class="card about-card">
+                <div class="about-name">Nova Clone</div>
+                <div class="about-desc">A desktop app for cloning Jira Cloud issues. Paste an issue key, pick a target project and issue type, and clone with comments, attachments, and issue links — all without leaving your desk.</div>
+                <div class="about-meta">
+                  &copy; 2026 Nova Clone &middot; v0.2.0<br>
+                  <a href="https://github.com/rostyslavudovenko/nova-clone/blob/main/LICENSE" target="_blank">Licensed under the MIT License</a>
+                </div>
+                <div class="about-divider"></div>
+                <div class="about-links">
+                  <a href="https://github.com/rostyslavudovenko/nova-clone" target="_blank">GitHub</a>
+                  <span>&middot;</span>
+                  <a href="https://github.com/rostyslavudovenko/nova-clone/issues" target="_blank" data-i18n="about.feedback">Feedback</a>
+                  <span>&middot;</span>
+                  <a href="mailto:rostyslavudovenko@icloud.com" data-i18n="about.contact">Contact me</a>
                 </div>
               </div>
             </div>

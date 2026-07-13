@@ -30,16 +30,6 @@
     }
   }
 
-  &-secondary {
-    background: var(--secondary);
-    color: white;
-    border-color: var(--secondary);
-
-    &:hover:not(:disabled) {
-      opacity: 0.9;
-    }
-  }
-
   &-ghost {
     background: transparent;
     color: var(--ink-secondary);
@@ -64,16 +54,6 @@
   &-sm {
     padding: 5px 10px;
     font-size: 12px;
-  }
-
-  &-icon {
-    width: 34px;
-    height: 34px;
-    padding: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
   }
 
   &-full {

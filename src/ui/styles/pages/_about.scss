@@ -1,0 +1,61 @@
+.about-card {
+  max-width: 420px;
+  margin: 40px auto;
+  text-align: center;
+}
+
+.about-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0 0 8px;
+}
+
+.about-desc {
+  font-size: 13px;
+  color: var(--ink-secondary);
+  margin: 0 0 20px;
+  line-height: 1.6;
+}
+
+.about-meta {
+  font-size: 13px;
+  color: var(--ink-tertiary);
+  font-weight: 500;
+  margin-bottom: 16px;
+
+  a {
+    color: var(--ink-tertiary);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--primary);
+    }
+  }
+}
+
+.about-divider {
+  height: 1px;
+  background: var(--border-light);
+  margin: 16px 0;
+}
+
+.about-links {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+
+  a {
+    color: var(--primary);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  span {
+    color: var(--ink-tertiary);
+  }
+}

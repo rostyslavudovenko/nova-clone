@@ -1,19 +1,17 @@
 {
   "app": {
-    "name": "Nova <span>Clone</span>",
-    "footer": "Nova Clone — Jira issue cloner"
+    "name": "Nova <span>Clone</span>"
   },
   "nav": {
     "clone": "Clone",
     "history": "History",
     "about": "About",
-    "disconnect": "Disconnect",
-    "settings": "Settings",
-    "general": "General"
+    "settings": "Settings"
   },
   "navGroup": {
     "general": "General",
-    "settings": "Preferences"
+    "settings": "Preferences",
+    "help": "Help"
   },
   "connect": {
     "title": "Connect to Jira",
@@ -27,20 +25,16 @@
     "tokenHelp": "Generate at id.atlassian.com/manage-profile/security/api-tokens",
     "connect": "Connect",
     "connecting": "Connecting...",
-    "error": "Connection failed",
     "invalidUrl": "Please enter a valid Jira URL",
     "invalidEmail": "Please enter your email",
     "invalidToken": "Please enter your API token",
-    "connected": "Connected to {{site}}",
-    "reconnecting": "Reconnecting...",
-    "disconnected": "Disconnected"
+    "connected": "Connected to {{site}}"
   },
   "clone": {
     "title": "Clone Issue",
     "issueKey": "Issue Key",
     "issueKeyPlaceholder": "Enter issue key (e.g. ABC-123) or paste URL",
     "lookup": "Look Up",
-    "lookingUp": "Looking up...",
     "preview": "Issue Preview",
     "issueNotFound": "Issue not found. Check the key and try again.",
     "targetProject": "Target Project",
@@ -121,5 +115,9 @@
       "en": "English",
       "uk": "Українська"
     }
+  },
+  "about": {
+    "feedback": "Feedback",
+    "contact": "Contact"
   }
 }

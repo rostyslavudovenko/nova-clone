@@ -1,19 +1,17 @@
 {
   "app": {
-    "name": "Nova <span>Clone</span>",
-    "footer": "Nova Clone — клонування задач Jira"
+    "name": "Nova <span>Clone</span>"
   },
   "nav": {
     "clone": "Клонувати",
     "history": "Історія",
     "about": "Про додаток",
-    "disconnect": "Відключитись",
-    "settings": "Налаштування",
-    "general": "Загальне"
+    "settings": "Налаштування"
   },
   "navGroup": {
     "general": "Загальне",
-    "settings": "Налаштування"
+    "settings": "Налаштування",
+    "help": "Довідка"
   },
   "connect": {
     "title": "Підключення до Jira",
@@ -27,20 +25,16 @@
     "tokenHelp": "Створіть на id.atlassian.com/manage-profile/security/api-tokens",
     "connect": "Підключитись",
     "connecting": "Підключення...",
-    "error": "Помилка підключення",
     "invalidUrl": "Введіть коректний URL Jira",
     "invalidEmail": "Введіть ваш email",
     "invalidToken": "Введіть ваш API токен",
-    "connected": "Підключено до {{site}}",
-    "reconnecting": "Перепідключення...",
-    "disconnected": "Відключено"
+    "connected": "Підключено до {{site}}"
   },
   "clone": {
     "title": "Клонувати задачу",
     "issueKey": "Ключ задачі",
     "issueKeyPlaceholder": "Введіть ключ (напр. ABC-123) або вставте URL",
     "lookup": "Знайти",
-    "lookingUp": "Пошук...",
     "preview": "Попередній перегляд",
     "issueNotFound": "Задачу не знайдено. Перевірте ключ.",
     "targetProject": "Проєкт призначення",
@@ -121,5 +115,9 @@
       "en": "English",
       "uk": "Українська"
     }
+  },
+  "about": {
+    "feedback": "Зворотний зв'язок",
+    "contact": "Контакт"
   }
 }

@@ -20,19 +20,9 @@
     color: var(--error);
   }
 
-  &--warning {
-    background: var(--warning-bg);
-    color: var(--warning);
-  }
-
   &--info {
     background: var(--info-bg);
     color: var(--info);
   }
 
-  &--neutral {
-    background: var(--paper);
-    color: var(--ink-tertiary);
-    border: 1px solid var(--border);
-  }
 }
