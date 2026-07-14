@@ -47,6 +47,9 @@ export async function cloneIssue(
   copyComments: boolean,
   copyAttachments: boolean,
   copyLinks: boolean,
+  copySummary: boolean,
+  copyDescription: boolean,
+  copyPriority: boolean,
 ): Promise<CloneResult> {
   return invoke<CloneResult>("clone_issue", {
     sourceIssueKey,
@@ -55,6 +58,9 @@ export async function cloneIssue(
     copyComments,
     copyAttachments,
     copyLinks,
+    copySummary,
+    copyDescription,
+    copyPriority,
   });
 }
 

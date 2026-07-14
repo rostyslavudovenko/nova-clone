@@ -15,6 +15,9 @@ pub struct CloneConfig {
   pub copy_comments: bool,
   pub copy_attachments: bool,
   pub copy_links: bool,
+  pub copy_summary: bool,
+  pub copy_description: bool,
+  pub copy_priority: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -138,6 +141,9 @@ fn transform_fields(
   source_fields: &Value,
   target_project_key: &str,
   target_issue_type_id: &str,
+  copy_summary: bool,
+  copy_description: bool,
+  copy_priority: bool,
 ) -> Value {
   let mut fields = serde_json::Map::new();
 
@@ -169,16 +175,21 @@ fn transform_fields(
       }
     }
 
-    // Copy summary and description
-    if let Some(summary) = obj.get("summary") {
-      fields.insert("summary".to_string(), summary.clone());
+    if copy_summary {
+      if let Some(summary) = obj.get("summary") {
+        fields.insert("summary".to_string(), summary.clone());
+      }
     }
-    if let Some(desc) = obj.get("description") {
-      fields.insert("description".to_string(), desc.clone());
+    if copy_description {
+      if let Some(desc) = obj.get("description") {
+        fields.insert("description".to_string(), desc.clone());
+      }
     }
-    if let Some(priority) = obj.get("priority") {
-      if let Some(p) = priority.get("id") {
-        fields.insert("priority".to_string(), serde_json::json!({ "id": p }));
+    if copy_priority {
+      if let Some(priority) = obj.get("priority") {
+        if let Some(p) = priority.get("id") {
+          fields.insert("priority".to_string(), serde_json::json!({ "id": p }));
+        }
       }
     }
   }
@@ -217,6 +228,9 @@ pub async fn execute_clone(
     &source.fields,
     &config.target_project_key,
     &config.target_issue_type_id,
+    config.copy_summary,
+    config.copy_description,
+    config.copy_priority,
   );
 
   let new_key = jira::create_issue(

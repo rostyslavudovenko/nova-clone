@@ -21,7 +21,7 @@ The app supports both English and Ukrainian interfaces and remembers your connec
 - Copy comments from source to cloned issue
 - Copy attachments (download from source, upload to clone)
 - Link cloned issue to original via "Relates" link type
-- Smart field transformation — skips system fields, rank fields, entity references, and user arrays; copies `summary`, `description`, `priority`, and non-empty custom fields
+- Smart field transformation — skips system fields, rank fields, entity references, and user arrays; optionally copies `summary`, `description`, `priority`, and non-empty custom fields via selectable System Fields checkboxes
 - Real-time clone progress with step-by-step status
 - Clone history with open-in-browser, timestamps, and status
 - Desktop notifications on clone completion and errors
@@ -127,7 +127,7 @@ The app is a single-page application — clone, history, and settings views live
 - **State management:** A reactive store built with [Zustand](https://github.com/pmndrs/zustand) (vanilla engine) using a subscription-based observable pattern. Pages re-render automatically when relevant state changes.
 - **Backend communication:** All Jira calls go through Tauri's `invoke()` IPC bridge to Rust commands. The TypeScript layer never makes direct HTTP requests.
 - **Clone orchestration:** The Rust backend (`src-tauri/src/clone/mod.rs`) runs the full pipeline — fetch source, transform fields, create issue, copy comments, copy attachments, link issues — emitting progress events via Tauri's event system.
-- **Field transformation:** System fields (id, key, created, status, project, issuetype, reporter, assignee, etc.) are skipped. Rank fields, entity references, user arrays, and empty values are filtered out. Only `summary`, `description`, `priority.id`, and non-empty custom fields are copied.
+- **Field transformation:** System fields (id, key, created, status, project, issuetype, reporter, assignee, etc.) are skipped. Rank fields, entity references, user arrays, and empty values are filtered out. `summary`, `description`, `priority.id`, and non-empty custom fields are optionally copied based on user-selected System Fields checkboxes.
 - **Localization (i18n):** Strings are extracted to `en.json` and `uk.json`, loaded dynamically at startup. HTML elements use `data-i18n` attributes; code calls `t("key", {params})` for interpolation.
 - **Error handling:** Typed error classes with `showError()` helper and inline toast notifications. All async operations are wrapped in try/catch with user-visible feedback.
 - **Data storage:** Connection config and clone history are persisted via `tauri-plugin-store` in `nova-clone.json`.

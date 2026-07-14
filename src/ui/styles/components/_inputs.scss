@@ -50,13 +50,15 @@ select {
   gap: 12px;
 }
 
+/* Сітка як у .config-columns — щоб селекти мали ті ж межі */
 .form-row {
-  display: flex;
-  gap: 12px;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: end;
 
-  > * {
-    flex: 1;
+  select {
+    min-width: 0;
   }
 }
 

@@ -62,6 +62,9 @@ const missingFieldsWarning = $("missing-fields-warning")!;
 const chkComments = $("chk-comments") as HTMLInputElement;
 const chkAttachments = $("chk-attachments") as HTMLInputElement;
 const chkLinks = $("chk-links") as HTMLInputElement;
+const chkSummary = $("chk-summary") as HTMLInputElement;
+const chkDescription = $("chk-description") as HTMLInputElement;
+const chkPriority = $("chk-priority") as HTMLInputElement;
 const btnClone = $("btn-clone") as HTMLButtonElement;
 const progressSection = $("progress-section")!;
 const progressSteps = $("progress-steps")!;
@@ -429,6 +432,9 @@ btnClone.addEventListener("click", async () => {
     copyComments: chkComments.checked,
     copyAttachments: chkAttachments.checked,
     copyLinks: chkLinks.checked,
+    copySummary: chkSummary.checked,
+    copyDescription: chkDescription.checked,
+    copyPriority: chkPriority.checked,
   };
 
   store.resetClone();
@@ -451,6 +457,9 @@ btnClone.addEventListener("click", async () => {
         config.copyComments,
         config.copyAttachments,
         config.copyLinks,
+        config.copySummary,
+        config.copyDescription,
+        config.copyPriority,
       );
       store.setCloneResult(result);
       store.setClonePhase("complete");

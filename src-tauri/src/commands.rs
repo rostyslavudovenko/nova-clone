@@ -161,6 +161,9 @@ pub async fn clone_issue(
   copy_comments: bool,
   copy_attachments: bool,
   copy_links: bool,
+  copy_summary: bool,
+  copy_description: bool,
+  copy_priority: bool,
 ) -> Result<CloneResult, String> {
   let conn = get_connection(&app)?;
   let client = jira::new_client();
@@ -175,6 +178,9 @@ pub async fn clone_issue(
     copy_comments,
     copy_attachments,
     copy_links,
+    copy_summary,
+    copy_description,
+    copy_priority,
   };
 
   let result = clone::execute_clone(app.clone(), client, config).await?;

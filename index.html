@@ -124,33 +124,49 @@
                   <div id="issue-error" class="connect-error hidden"></div>
                 </div>
 
-                <!-- Two Column Dashboard Grid -->
-                <div class="clone-grid">
-                  <!-- Left Column: Config, Progress, Result -->
-                  <div class="clone-grid-left">
-                    <!-- Clone Config -->
-                    <div id="clone-config-section" class="hidden">
-                      <div class="card">
-                        <div class="card-title">Configuration</div>
+                <!-- Clone Config (full width) -->
+                <div id="clone-config-section" class="hidden">
+                  <div class="card">
+                    <div class="card-title">Configuration</div>
 
-                        <div class="form-row" style="margin-bottom: 16px;">
-                          <div>
-                            <label data-i18n="clone.targetProject">Target Project</label>
-                            <select id="select-project" data-i18n-placeholder="clone.targetProjectPlaceholder">
-                              <option value="" data-i18n="clone.targetProjectPlaceholder">Select a project...</option>
-                            </select>
+                    <div class="form-row">
+                      <div>
+                        <label data-i18n="clone.targetProject">Target Project</label>
+                        <select id="select-project" data-i18n-placeholder="clone.targetProjectPlaceholder">
+                          <option value="" data-i18n="clone.targetProjectPlaceholder">Select a project...</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label data-i18n="clone.targetIssueType">Issue Type</label>
+                        <select id="select-issuetype" data-i18n-placeholder="clone.targetIssueTypePlaceholder">
+                          <option value="" data-i18n="clone.targetIssueTypePlaceholder">Select issue type...</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div id="missing-fields-warning" class="hidden" style="background: var(--warning-bg); border: 1px solid var(--warning); border-radius: var(--radius-xs); padding: 10px 14px; font-size: 12px; color: var(--warning); margin-top: 12px;"></div>
+
+                    <div class="config-columns">
+                      <div class="config-column">
+                        <div class="card-title" data-i18n="clone.systemFields">System Fields</div>
+                        <div class="checkbox-group-card">
+                          <div class="checkbox-row">
+                            <input type="checkbox" id="chk-summary" checked />
+                            <label for="chk-summary" data-i18n="clone.copySummary">Summary</label>
                           </div>
-                          <div>
-                            <label data-i18n="clone.targetIssueType">Issue Type</label>
-                            <select id="select-issuetype" data-i18n-placeholder="clone.targetIssueTypePlaceholder">
-                              <option value="" data-i18n="clone.targetIssueTypePlaceholder">Select issue type...</option>
-                            </select>
+                          <div class="checkbox-row">
+                            <input type="checkbox" id="chk-description" checked />
+                            <label for="chk-description" data-i18n="clone.copyDescription">Description</label>
+                          </div>
+                          <div class="checkbox-row">
+                            <input type="checkbox" id="chk-priority" checked />
+                            <label for="chk-priority" data-i18n="clone.copyPriority">Priority</label>
                           </div>
                         </div>
+                      </div>
 
-                        <div id="missing-fields-warning" class="hidden" style="background: var(--warning-bg); border: 1px solid var(--warning); border-radius: var(--radius-xs); padding: 10px 14px; font-size: 12px; color: var(--warning); margin-bottom: 16px;"></div>
-
-                        <div class="card-title" style="margin-top: 4px;" data-i18n="clone.options">Clone Options</div>
+                      <div class="config-column">
+                        <div class="card-title" data-i18n="clone.options">Clone Options</div>
                         <div class="checkbox-group-card">
                           <div class="checkbox-row">
                             <input type="checkbox" id="chk-comments" checked />
@@ -165,11 +181,48 @@
                             <label for="chk-links" data-i18n="clone.copyLinks">Link cloned issue to original</label>
                           </div>
                         </div>
-
-                        <button class="btn btn-primary btn-full" id="btn-clone" data-i18n="clone.startClone" style="margin-top: 20px;">Start Clone</button>
                       </div>
                     </div>
 
+                    <button class="btn btn-primary btn-full" id="btn-clone" data-i18n="clone.startClone" style="margin-top: 20px;">Start Clone</button>
+                  </div>
+                </div>
+
+                <!-- Two Column Grid: Preview + Progress/Result -->
+                <div class="clone-grid">
+                  <!-- Left Column: Source Issue Preview -->
+                  <div class="clone-grid-left">
+                    <div id="issue-preview-section" class="hidden">
+                      <div class="card preview-card-outer">
+                        <div class="card-title" data-i18n="clone.preview">Source Issue</div>
+                        <div class="issue-detail">
+                          <div class="issue-header">
+                            <span class="issue-key-badge" id="preview-key"></span>
+                            <span class="badge" id="preview-status"></span>
+                          </div>
+                          <h3 class="issue-title" id="preview-summary"></h3>
+                          <div class="divider"></div>
+                          <div class="issue-properties">
+                            <div class="property-row">
+                              <span class="property-label">Type</span>
+                              <span class="property-value" id="preview-type"></span>
+                            </div>
+                            <div class="property-row">
+                              <span class="property-label">Reporter</span>
+                              <span class="property-value" id="preview-reporter"></span>
+                            </div>
+                            <div class="property-row">
+                              <span class="property-label">Assignee</span>
+                              <span class="property-value" id="preview-assignee"></span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Right Column: Progress + Result -->
+                  <div class="clone-grid-right">
                     <!-- Progress -->
                     <div id="progress-section" class="hidden">
                       <div class="card">
@@ -196,37 +249,6 @@
                           <div class="result-title" data-i18n="clone.error">Clone failed</div>
                           <div class="result-desc" id="result-error-desc"></div>
                           <button class="btn btn-primary" id="btn-retry">Retry</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Right Column: Source Issue Preview -->
-                  <div class="clone-grid-right">
-                    <div id="issue-preview-section" class="hidden">
-                      <div class="card preview-card-outer">
-                        <div class="card-title" data-i18n="clone.preview">Source Issue</div>
-                        <div class="issue-detail">
-                          <div class="issue-header">
-                            <span class="issue-key-badge" id="preview-key"></span>
-                            <span class="badge" id="preview-status"></span>
-                          </div>
-                          <h3 class="issue-title" id="preview-summary"></h3>
-                          <div class="divider"></div>
-                          <div class="issue-properties">
-                            <div class="property-row">
-                              <span class="property-label">Type</span>
-                              <span class="property-value" id="preview-type"></span>
-                            </div>
-                            <div class="property-row">
-                              <span class="property-label">Reporter</span>
-                              <span class="property-value" id="preview-reporter"></span>
-                            </div>
-                            <div class="property-row">
-                              <span class="property-label">Assignee</span>
-                              <span class="property-value" id="preview-assignee"></span>
-                            </div>
-                          </div>
                         </div>
                       </div>
                     </div>
