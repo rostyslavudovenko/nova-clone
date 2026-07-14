@@ -111,6 +111,21 @@ select {
     &:focus-visible {
       box-shadow: 0 0 0 2px var(--primary-dim);
     }
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+
+      &:checked {
+        background-color: var(--ink-tertiary);
+        border-color: var(--ink-tertiary);
+      }
+    }
+  }
+
+  &:has(input:disabled) label {
+    color: var(--ink-tertiary);
+    cursor: not-allowed;
   }
 
   label {
