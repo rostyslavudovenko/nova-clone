@@ -25,6 +25,11 @@ select {
     box-shadow: 0 0 0 3px var(--primary-dim);
   }
 
+  &.input-error {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px var(--error-bg);
+  }
+
   &::placeholder {
     color: var(--ink-tertiary);
   }

@@ -207,17 +207,24 @@ btnConnect.addEventListener("click", async () => {
   const email = inputEmail.value.trim();
   const token = inputToken.value.trim();
 
+  inputSiteUrl.classList.remove("input-error");
+  inputEmail.classList.remove("input-error");
+  inputToken.classList.remove("input-error");
+
   if (!siteUrl) {
+    inputSiteUrl.classList.add("input-error");
     connectError.textContent = t("connect.invalidUrl");
     connectError.classList.remove("hidden");
     return;
   }
   if (!email) {
+    inputEmail.classList.add("input-error");
     connectError.textContent = t("connect.invalidEmail");
     connectError.classList.remove("hidden");
     return;
   }
   if (!token) {
+    inputToken.classList.add("input-error");
     connectError.textContent = t("connect.invalidToken");
     connectError.classList.remove("hidden");
     return;
@@ -250,11 +257,13 @@ btnLookup.addEventListener("click", async () => {
 
   const key = parseIssueKey(raw);
   if (!key) {
+    inputIssueKey.classList.add("input-error");
     issueError.textContent = t("clone.issueNotFound");
     issueError.classList.remove("hidden");
     return;
   }
 
+  inputIssueKey.classList.remove("input-error");
   issueError.classList.add("hidden");
   setButtonLoading(btnLookup, true, "clone.lookup");
 
@@ -267,6 +276,7 @@ btnLookup.addEventListener("click", async () => {
     store.setClonePhase("preview");
     show(cloneConfigSection);
   } catch (error) {
+    inputIssueKey.classList.add("input-error");
     issueError.textContent =
       typeof error === "string" ? error : error instanceof Error ? error.message : t("clone.issueNotFound");
     issueError.classList.remove("hidden");
@@ -279,6 +289,10 @@ btnLookup.addEventListener("click", async () => {
 
 inputIssueKey.addEventListener("keydown", (e) => {
   if (e.key === "Enter") btnLookup.click();
+});
+
+[inputSiteUrl, inputEmail, inputToken, inputIssueKey].forEach((input) => {
+  input.addEventListener("input", () => input.classList.remove("input-error"));
 });
 
 function renderPreview(issue: JiraIssue) {
