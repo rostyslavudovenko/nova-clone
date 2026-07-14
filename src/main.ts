@@ -712,6 +712,7 @@ async function init() {
     await setupI18n();
     updateUI();
     initConnectionUI();
+    document.querySelector(".sidebar-profile")?.addEventListener("click", () => switchView("settings"));
     initLanguageSelect();
     initDisconnect();
     document.documentElement.style.visibility = "";

@@ -3,24 +3,24 @@ import { getConnectionStatus } from "./jira-client";
 
 let connectionStatus: HTMLElement | null;
 let connectionInfo: HTMLElement | null;
-let topbarContent: HTMLElement | null;
+let connectionSite: HTMLElement | null;
 let profileAvatar: HTMLElement | null;
 
 function ensureRefs() {
   connectionStatus = document.getElementById("connection-status");
   connectionInfo = document.getElementById("connection-info");
-  topbarContent = document.getElementById("topbar-content");
-  profileAvatar = document.querySelector(".profile-avatar") as HTMLElement | null;
+  connectionSite = document.getElementById("connection-site");
+  profileAvatar = document.querySelector(".sidebar-profile .profile-avatar") as HTMLElement | null;
 }
 
 function syncConnectionUI() {
-  if (!connectionStatus || !connectionInfo || !topbarContent) return;
+  if (!connectionStatus || !connectionInfo || !connectionSite) return;
 
   const conn = store.state.connection;
   if (store.state.connectionStatus === "connected" && conn) {
     connectionStatus.classList.remove("hidden");
     connectionInfo.textContent = conn.email ?? "";
-    topbarContent.innerHTML = `<span style="font-size: 12px; color: var(--ink-tertiary);">${conn.siteUrl ?? ""}</span>`;
+    connectionSite.textContent = conn.siteUrl ?? "";
 
     if (profileAvatar) {
       if (conn.avatarUrl) {

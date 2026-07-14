@@ -17,7 +17,7 @@ The app supports both English and Ukrainian interfaces and remembers your connec
 
 - Connect to any Jira Cloud instance via email + API token
 - Look up issues by key or URL with instant preview
-- Clone to any accessible project and issue type
+- Clone to any accessible project and issue type (paginated project list, auto-refreshes on view switch)
 - Copy comments from source to cloned issue
 - Copy attachments (download from source, upload to clone)
 - Link cloned issue to original via "Relates" link type
@@ -36,7 +36,7 @@ Nova Clone uses the **Jira Cloud REST API v3** (`/rest/api/3/...`). All HTTP cal
 | ---------------------------------------------------- | ------ | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `/rest/api/3/myself`                                 | GET    | Validate credentials on connect         | [docs.atlassian.com](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-myself/#api-rest-api-3-myself-get)                                                      |
 | `/rest/api/3/issue/{key}`                            | GET    | Fetch source issue details              | [docs.atlassian.com](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-issueidorkey-get)                                          |
-| `/rest/api/3/project/search`                         | GET    | List accessible projects (primary)      | [docs.atlassian.com](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-project-search/#api-rest-api-3-project-search-get)                                      |
+| `/rest/api/3/project/search`                         | GET    | List accessible projects (paginated)    | [docs.atlassian.com](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-project-search/#api-rest-api-3-project-search-get)                                      |
 | `/rest/api/3/project`                                | GET    | List projects (fallback)                | [docs.atlassian.com](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-projects/#api-rest-api-3-project-get)                                                   |
 | `/rest/api/3/issue/createmeta/{key}/issuetypes`      | GET    | Get issue types for a project           | [docs.atlassian.com](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-types/#api-rest-api-3-issue-createmeta-projectidorkey-issuetypes-get)             |
 | `/rest/api/3/issue/createmeta?projectKeys=...`       | GET    | Get issue types (fallback)              | [docs.atlassian.com](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/)                                                                                |
@@ -195,7 +195,7 @@ nova-clone/
 │   │   └── styles/
 │   │       ├── base/                # Reset, typography, globals
 │   │       ├── components/          # Buttons, cards, inputs, table, badges, toast, confirm-dialog, progress
-│   │       ├── layout/              # Sidebar, topbar, container, grid
+│   │       ├── layout/              # Sidebar, container, grid
 │   │       ├── media/               # Responsive breakpoints
 │   │       ├── pages/               # Page-specific styles (connect, clone, history, settings)
 │   │       ├── themes/              # CSS variables (--primary: #6366f1)
