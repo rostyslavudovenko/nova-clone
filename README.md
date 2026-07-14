@@ -8,7 +8,7 @@ Built with **Tauri v2**, **Vite 8**, **TypeScript 6**, and **SCSS**. The Rust ba
 
 1. **Connect** — enter your Jira Cloud site URL, email, and an [Atlassian API token](https://id.atlassian.com/manage-profile/security/api-tokens)
 2. **Look Up** — paste an issue key (e.g. `ABC-123`) or a full Jira URL; the app fetches a preview with summary, type, status, and assignee
-3. **Configure** — select the target project and issue type, and choose what to copy (comments, attachments, link to original)
+3. **Configure** — select the target project and issue type, choose which system fields to copy (summary, description, priority), and toggle clone options (comments, attachments, link to original)
 4. **Clone** — the Rust backend orchestrates the full clone pipeline with real-time progress events
 
 The app supports both English and Ukrainian interfaces and remembers your connection across restarts.
