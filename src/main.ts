@@ -110,6 +110,9 @@ function switchView(target: "clone" | "history" | "settings" | "about") {
   if (target === "clone") {
     show(viewClone);
     navClone.classList.add("active");
+    if (store.state.connectionStatus === "connected") {
+      loadProjects();
+    }
   } else if (target === "history") {
     show(viewHistory);
     navHistory.classList.add("active");

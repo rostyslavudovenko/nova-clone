@@ -169,44 +169,57 @@ pub async fn fetch_projects(
   email: &str,
   token: &str,
 ) -> Result<Vec<ProjectSummary>, String> {
-  let url = format!(
-    "{}/rest/api/3/project/search",
-    site_url.trim_end_matches('/')
-  );
+  let base_url = format!("{}/rest/api/3/project/search", site_url.trim_end_matches('/'));
   let auth_header = basic_auth(email, token);
+  let mut all_projects = Vec::new();
+  let mut start_at: u32 = 0;
+  let page_size: u32 = 50;
 
-  let resp = client
-    .get(&url)
-    .header("Authorization", &auth_header)
-    .header("Accept", "application/json")
-    .send()
-    .await
-    .map_err(|e| format!("Network error: {}", e))?;
+  loop {
+    let url = format!("{}?startAt={}&maxResults={}", base_url, start_at, page_size);
+    let resp = client
+      .get(&url)
+      .header("Authorization", &auth_header)
+      .header("Accept", "application/json")
+      .send()
+      .await
+      .map_err(|e| format!("Network error: {}", e))?;
 
-  if resp.status().is_success() {
+    if !resp.status().is_success() {
+      break;
+    }
+
     let body: Value = resp
       .json()
       .await
       .map_err(|e| format!("Failed to parse response: {}", e))?;
 
-    if let Some(values) = body.get("values").and_then(|v| v.as_array()) {
-      let projects = values
-        .iter()
-        .map(|v| ProjectSummary {
-          key: v.get("key").and_then(|k| k.as_str()).unwrap_or("").to_string(),
-          name: v.get("name").and_then(|n| n.as_str()).unwrap_or("").to_string(),
-          id: v.get("id").and_then(|i| i.as_str()).unwrap_or("").to_string(),
-        })
-        .collect();
-      return Ok(projects);
+    let values = match body.get("values").and_then(|v| v.as_array()) {
+      Some(arr) => arr,
+      None => break,
+    };
+
+    for v in values {
+      all_projects.push(ProjectSummary {
+        key: v.get("key").and_then(|k| k.as_str()).unwrap_or("").to_string(),
+        name: v.get("name").and_then(|n| n.as_str()).unwrap_or("").to_string(),
+        id: v.get("id").and_then(|i| i.as_str()).unwrap_or("").to_string(),
+      });
+    }
+
+    let total = body.get("total").and_then(|t| t.as_u64()).unwrap_or(0) as u32;
+    start_at += page_size;
+    if start_at >= total || values.is_empty() {
+      break;
     }
   }
 
+  if !all_projects.is_empty() {
+    return Ok(all_projects);
+  }
+
   // Fallback to legacy endpoint /rest/api/3/project
-  let fallback_url = format!(
-    "{}/rest/api/3/project",
-    site_url.trim_end_matches('/')
-  );
+  let fallback_url = format!("{}/rest/api/3/project", site_url.trim_end_matches('/'));
 
   let resp = client
     .get(&fallback_url)
