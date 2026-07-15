@@ -32,7 +32,7 @@ const htmlFiles = ["index.html"];
 for (const file of htmlFiles) {
   const html = readFileSync(file, "utf8");
   const updatedHtml = html.replace(
-    /(Licensed under the MIT License<\/a> &middot; )v[\d.]+/,
+    /(&copy; 2026 Nova Clone &middot; )v[\d.]+/,
     `$1v${version}`
   );
   writeFileSync(file, updatedHtml);
