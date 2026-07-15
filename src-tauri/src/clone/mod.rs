@@ -18,6 +18,7 @@ pub struct CloneConfig {
   pub copy_summary: bool,
   pub copy_description: bool,
   pub copy_priority: bool,
+  pub custom_field_keys: Vec<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -27,6 +28,7 @@ pub struct CloneResult {
   pub attachments_copied: usize,
   pub link_created: bool,
   pub site_url: String,
+  pub skipped_custom_fields: Vec<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -144,8 +146,11 @@ fn transform_fields(
   copy_summary: bool,
   copy_description: bool,
   copy_priority: bool,
-) -> Value {
+  custom_field_keys: &[String],
+) -> (Value, Vec<String>) {
   let mut fields = serde_json::Map::new();
+  let mut skipped = Vec::new();
+  let allowed_custom: std::collections::HashSet<&String> = custom_field_keys.iter().collect();
 
   fields.insert(
     "project".to_string(),
@@ -162,6 +167,10 @@ fn transform_fields(
         continue;
       }
       if key.starts_with("customfield_") {
+        if !allowed_custom.contains(key) {
+          skipped.push(key.clone());
+          continue;
+        }
         if value.is_null()
           || is_empty_value(value)
           || is_rank_field(value)
@@ -169,6 +178,7 @@ fn transform_fields(
           || is_rank_string(value)
           || is_user_array(value)
         {
+          skipped.push(key.clone());
           continue;
         }
         fields.insert(key.clone(), value.clone());
@@ -194,7 +204,7 @@ fn transform_fields(
     }
   }
 
-  Value::Object(fields)
+  (Value::Object(fields), skipped)
 }
 
 pub async fn execute_clone(
@@ -224,13 +234,14 @@ pub async fn execute_clone(
 
   emit_progress(&app, "creating_issue", "progress", None, None, None);
 
-  let fields = transform_fields(
+  let (fields, skipped_custom_fields) = transform_fields(
     &source.fields,
     &config.target_project_key,
     &config.target_issue_type_id,
     config.copy_summary,
     config.copy_description,
     config.copy_priority,
+    &config.custom_field_keys,
   );
 
   let new_key = jira::create_issue(
@@ -398,6 +409,7 @@ pub async fn execute_clone(
     attachments_copied,
     link_created,
     site_url: config.site_url.clone(),
+    skipped_custom_fields,
   };
 
   emit_progress(

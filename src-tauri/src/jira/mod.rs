@@ -64,6 +64,12 @@ pub struct CreatemetaResult {
   pub issue_types: Vec<IssueTypeMeta>,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct FieldInfo {
+  pub key: String,
+  pub name: String,
+}
+
 pub fn new_client() -> Client {
   Client::builder()
     .user_agent("nova-clone/0.1.0")
@@ -417,6 +423,151 @@ pub async fn fetch_issue_type_fields(
   }
 
   Ok(required_fields)
+}
+
+pub async fn fetch_field_metadata(
+  client: &Client,
+  site_url: &str,
+  email: &str,
+  token: &str,
+) -> Result<Vec<FieldInfo>, String> {
+  let url = format!(
+    "{}/rest/api/3/field",
+    site_url.trim_end_matches('/')
+  );
+  let auth_header = basic_auth(email, token);
+
+  let resp = client
+    .get(&url)
+    .header("Authorization", &auth_header)
+    .header("Accept", "application/json")
+    .send()
+    .await
+    .map_err(|e| format!("Network error: {}", e))?;
+
+  if !resp.status().is_success() {
+    return Err(format!("Failed to fetch field metadata: {}", extract_error(resp).await));
+  }
+
+  let body: Value = resp
+    .json()
+    .await
+    .map_err(|e| format!("Failed to parse response: {}", e))?;
+
+  let fields = body
+    .as_array()
+    .ok_or_else(|| "Expected array from /rest/api/3/field".to_string())?;
+
+  let result = fields
+    .iter()
+    .filter_map(|f| {
+      let key = f.get("id")?.as_str()?.to_string();
+      let name = f.get("name")?.as_str()?.to_string();
+      Some(FieldInfo { key, name })
+    })
+    .collect();
+
+  Ok(result)
+}
+
+pub async fn fetch_target_fields(
+  client: &Client,
+  site_url: &str,
+  email: &str,
+  token: &str,
+  project_key: &str,
+  issue_type_id: &str,
+) -> Result<Vec<FieldInfo>, String> {
+  let url = format!(
+    "{}/rest/api/3/issue/createmeta/{}/issuetypes/{}",
+    site_url.trim_end_matches('/'),
+    project_key,
+    issue_type_id
+  );
+  let auth_header = basic_auth(email, token);
+
+  let resp = client
+    .get(&url)
+    .header("Authorization", &auth_header)
+    .header("Accept", "application/json")
+    .send()
+    .await
+    .map_err(|e| format!("Network error: {}", e))?;
+
+  if !resp.status().is_success() {
+    return Err(format!("Failed to fetch target fields: {}", extract_error(resp).await));
+  }
+
+  let body: Value = resp
+    .json()
+    .await
+    .map_err(|e| format!("Failed to parse response: {}", e))?;
+
+  let mut result = Vec::new();
+  if let Some(fields) = body.get("fields").and_then(|f| f.as_object()) {
+    for (field_key, field_spec) in fields {
+      let name = field_spec
+        .get("name")
+        .and_then(|n| n.as_str())
+        .unwrap_or(field_key)
+        .to_string();
+      result.push(FieldInfo {
+        key: field_key.clone(),
+        name,
+      });
+    }
+  }
+
+  // Fallback: try legacy endpoint if new endpoint returned empty
+  if result.is_empty() {
+    let legacy_url = format!(
+      "{}/rest/api/3/issue/createmeta?projectKeys={}&expand=projects.issuetypes.fields",
+      site_url.trim_end_matches('/'),
+      project_key
+    );
+
+    let resp = client
+      .get(&legacy_url)
+      .header("Authorization", &auth_header)
+      .header("Accept", "application/json")
+      .send()
+      .await
+      .map_err(|e| format!("Network error: {}", e))?;
+
+    if resp.status().is_success() {
+      let body: Value = resp
+        .json()
+        .await
+        .map_err(|e| format!("Failed to parse response: {}", e))?;
+
+      if let Some(projects) = body.get("projects").and_then(|p| p.as_array()) {
+        if let Some(project) = projects.first() {
+          if let Some(issue_types) = project.get("issuetypes").and_then(|t| t.as_array()) {
+            for it in issue_types {
+              if it.get("id").and_then(|v| v.as_str()) == Some(issue_type_id) {
+                if let Some(fields) = it.get("fields").and_then(|f| f.as_object()) {
+                  for (field_key, field_spec) in fields {
+                    let name = field_spec
+                      .get("name")
+                      .and_then(|n| n.as_str())
+                      .unwrap_or(field_key)
+                      .to_string();
+                    result.push(FieldInfo {
+                      key: field_key.clone(),
+                      name,
+                    });
+                  }
+                }
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  Ok(result)
 }
 
 pub async fn create_issue(

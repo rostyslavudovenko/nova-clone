@@ -42,12 +42,18 @@ export interface CloneConfig {
   copyLinks: boolean;
 }
 
+export interface FieldInfo {
+  key: string;
+  name: string;
+}
+
 export interface CloneResult {
   new_issue_key: string;
   comments_copied: number;
   attachments_copied: number;
   link_created: boolean;
   site_url: string;
+  skipped_custom_fields: string[];
 }
 
 export interface ProgressEvent {

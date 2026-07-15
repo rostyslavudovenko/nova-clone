@@ -164,6 +164,7 @@ pub async fn clone_issue(
   copy_summary: bool,
   copy_description: bool,
   copy_priority: bool,
+  custom_field_keys: Vec<String>,
 ) -> Result<CloneResult, String> {
   let conn = get_connection(&app)?;
   let client = jira::new_client();
@@ -181,6 +182,7 @@ pub async fn clone_issue(
     copy_summary,
     copy_description,
     copy_priority,
+    custom_field_keys,
   };
 
   let result = clone::execute_clone(app.clone(), client, config).await?;
@@ -262,4 +264,26 @@ pub async fn fetch_issue_type_fields(
   let client = jira::new_client();
 
   jira::fetch_issue_type_fields(&client, &conn.site_url, &conn.email, &conn.token, &project_key, &issue_type_id).await
+}
+
+#[tauri::command]
+pub async fn fetch_field_metadata(
+  app: AppHandle,
+) -> Result<Vec<jira::FieldInfo>, String> {
+  let conn = get_connection(&app)?;
+  let client = jira::new_client();
+
+  jira::fetch_field_metadata(&client, &conn.site_url, &conn.email, &conn.token).await
+}
+
+#[tauri::command]
+pub async fn fetch_target_fields(
+  app: AppHandle,
+  project_key: String,
+  issue_type_id: String,
+) -> Result<Vec<jira::FieldInfo>, String> {
+  let conn = get_connection(&app)?;
+  let client = jira::new_client();
+
+  jira::fetch_target_fields(&client, &conn.site_url, &conn.email, &conn.token, &project_key, &issue_type_id).await
 }

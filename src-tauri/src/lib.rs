@@ -30,6 +30,8 @@ pub fn run() {
       commands::get_history,
       commands::persist_connection,
       commands::fetch_issue_type_fields,
+      commands::fetch_field_metadata,
+      commands::fetch_target_fields,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

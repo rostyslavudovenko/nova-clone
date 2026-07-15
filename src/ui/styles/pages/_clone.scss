@@ -55,6 +55,26 @@
   }
 }
 
+.custom-fields-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &.unavailable {
+      opacity: 0.5;
+    }
+  }
+}
+
 .clone-result {
   text-align: center;
   padding: 24px;

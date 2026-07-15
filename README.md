@@ -21,7 +21,8 @@ The app supports both English and Ukrainian interfaces and remembers your connec
 - Copy comments from source to cloned issue
 - Copy attachments (download from source, upload to clone)
 - Link cloned issue to original via "Relates" link type
-- Smart field transformation — skips system fields, rank fields, entity references, and user arrays; optionally copies `summary`, `description`, `priority`, and non-empty custom fields via selectable System Fields checkboxes
+- Smart field transformation — skips system fields, rank fields, entity references, and user arrays; optionally copies `summary`, `description`, `priority`, and selected custom fields
+- Custom fields section with Available/All filter — shows all custom fields from the source issue with human-readable names; unavailable fields in the target project are automatically disabled; skipped fields are reported in the clone result
 - Real-time clone progress with step-by-step status
 - Clone history with open-in-browser, timestamps, and status
 - Desktop notifications on clone completion and errors
@@ -40,7 +41,8 @@ Nova Clone uses the **Jira Cloud REST API v3** (`/rest/api/3/...`). All HTTP cal
 | `/rest/api/3/project`                                | GET    | List projects (fallback)                | [docs.atlassian.com](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-projects/#api-rest-api-3-project-get)                                                   |
 | `/rest/api/3/issue/createmeta/{key}/issuetypes`      | GET    | Get issue types for a project           | [docs.atlassian.com](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-types/#api-rest-api-3-issue-createmeta-projectidorkey-issuetypes-get)             |
 | `/rest/api/3/issue/createmeta?projectKeys=...`       | GET    | Get issue types (fallback)              | [docs.atlassian.com](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/)                                                                                |
-| `/rest/api/3/issue/createmeta/{key}/issuetypes/{id}` | GET    | Fetch required fields for an issue type | [docs.atlassian.com](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-types/#api-rest-api-3-issue-createmeta-projectidorkey-issuetypes-issuetypeid-get) |
+| `/rest/api/3/issue/createmeta/{key}/issuetypes/{id}` | GET    | Fetch available fields for an issue type | [docs.atlassian.com](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-types/#api-rest-api-3-issue-createmeta-projectidorkey-issuetypes-issuetypeid-get) |
+| `/rest/api/3/field`                                  | GET    | Fetch field metadata (names, keys)      | [docs.atlassian.com](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-fields/#api-rest-api-3-field-get)                                                      |
 | `/rest/api/3/issue`                                  | POST   | Create the cloned issue                 | [docs.atlassian.com](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issues/#api-rest-api-3-issue-post)                                                      |
 | `/rest/api/3/issue/{key}/comment`                    | GET    | Fetch comments from source              | [docs.atlassian.com](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-comments/#api-rest-api-3-issue-issueidorkey-comment-get)                          |
 | `/rest/api/3/issue/{key}/comment`                    | POST   | Add comment to cloned issue             | [docs.atlassian.com](https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-comments/#api-rest-api-3-issue-issueidorkey-comment-post)                         |
@@ -127,7 +129,7 @@ The app is a single-page application — clone, history, and settings views live
 - **State management:** A reactive store built with [Zustand](https://github.com/pmndrs/zustand) (vanilla engine) using a subscription-based observable pattern. Pages re-render automatically when relevant state changes.
 - **Backend communication:** All Jira calls go through Tauri's `invoke()` IPC bridge to Rust commands. The TypeScript layer never makes direct HTTP requests.
 - **Clone orchestration:** The Rust backend (`src-tauri/src/clone/mod.rs`) runs the full pipeline — fetch source, transform fields, create issue, copy comments, copy attachments, link issues — emitting progress events via Tauri's event system.
-- **Field transformation:** System fields (id, key, created, status, project, issuetype, reporter, assignee, etc.) are skipped. Rank fields, entity references, user arrays, and empty values are filtered out. `summary`, `description`, `priority.id`, and non-empty custom fields are optionally copied based on user-selected System Fields checkboxes.
+- **Field transformation:** System fields (id, key, created, status, project, issuetype, reporter, assignee, etc.) are skipped. Rank fields, entity references, user arrays, and empty values are filtered out. `summary`, `description`, `priority.id`, and selected custom fields are copied based on user-selected checkboxes. Custom fields are matched against the target project's available fields — unavailable fields are disabled in the UI and skipped during clone, with skipped fields reported in the result.
 - **Localization (i18n):** Strings are extracted to `en.json` and `uk.json`, loaded dynamically at startup. HTML elements use `data-i18n` attributes; code calls `t("key", {params})` for interpolation.
 - **Error handling:** Typed error classes with `showError()` helper and inline toast notifications. All async operations are wrapped in try/catch with user-visible feedback.
 - **Data storage:** Connection config and clone history are persisted via `tauri-plugin-store` in `nova-clone.json`.
@@ -194,7 +196,7 @@ nova-clone/
 │   │   ├── confirm-dialog.ts        # Confirm dialog (Promise<boolean>)
 │   │   └── styles/
 │   │       ├── base/                # Reset, typography, globals
-│   │       ├── components/          # Buttons, cards, inputs, table, badges, toast, confirm-dialog, progress
+│   │       ├── components/          # Buttons, cards, inputs, table, badges, toast, confirm-dialog, progress, segmented
 │   │       ├── layout/              # Sidebar, container, grid
 │   │       ├── media/               # Responsive breakpoints
 │   │       ├── pages/               # Page-specific styles (connect, clone, history, settings)

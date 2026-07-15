@@ -1,6 +1,6 @@
 import "./ui/styles/main.scss";
 import { store } from "./core/store";
-import { parseIssueKey, type ProgressEvent, type JiraIssue, type CloneResult, type HistoryEntry } from "./core/state";
+import { parseIssueKey, type ProgressEvent, type JiraIssue, type CloneResult, type HistoryEntry, type FieldInfo } from "./core/state";
 import { initConnectionUI } from "./core/connection-ui";
 import {
   validateConnection,
@@ -12,6 +12,8 @@ import {
   cloneIssue,
   disconnect,
   getHistory,
+  fetchFieldMetadata,
+  fetchTargetFields,
 } from "./core/jira-client";
 import { notify } from "./core/notify";
 import { setupI18n, updateUI, switchLocale, t } from "./core/i18n/i18n";
@@ -66,6 +68,9 @@ const chkSummary = $("chk-summary") as HTMLInputElement;
 const chkDescription = $("chk-description") as HTMLInputElement;
 const chkPriority = $("chk-priority") as HTMLInputElement;
 const btnClone = $("btn-clone") as HTMLButtonElement;
+const customFieldsSection = $("custom-fields-section")!;
+const customFieldsList = $("custom-fields-list")!;
+const customFieldsFilter = $("custom-fields-filter")!;
 const progressSection = $("progress-section")!;
 const progressSteps = $("progress-steps")!;
 const resultSection = $("result-section")!;
@@ -91,6 +96,11 @@ const accountDisconnected = $("account-disconnected")!;
 const accountStatusBadge = $("account-status-badge")!;
 const btnDisconnect = $("btn-account-disconnect") as HTMLButtonElement;
 const languageSelect = $("language-select") as HTMLSelectElement;
+
+// Custom fields state
+let fieldMetadata: FieldInfo[] = [];
+let targetAvailableFields: FieldInfo[] = [];
+let customFieldsFilterMode: "available" | "all" = "available";
 
 // ─── State helpers ───────────────────────────────────
 function show(view: HTMLElement) {
@@ -278,6 +288,7 @@ btnLookup.addEventListener("click", async () => {
     show(issuePreviewSection);
     store.setClonePhase("preview");
     show(cloneConfigSection);
+    renderCustomFields(issue.fields, targetAvailableFields);
   } catch (error) {
     inputIssueKey.classList.add("input-error");
     issueError.textContent =
@@ -307,6 +318,64 @@ function renderPreview(issue: JiraIssue) {
   previewReporter.textContent = issue.reporter ?? "None";
   previewAssignee.textContent = issue.assignee ?? "Unassigned";
 }
+
+function renderCustomFields(sourceFields: Record<string, unknown>, available: FieldInfo[]) {
+  customFieldsList.innerHTML = "";
+  const availableKeys = new Set(available.map((f) => f.key));
+  const nameMap = new Map(fieldMetadata.map((f) => [f.key, f.name]));
+
+  const customKeys = Object.keys(sourceFields).filter((k) => k.startsWith("customfield_"));
+
+  if (customKeys.length === 0) {
+    hide(customFieldsSection);
+    return;
+  }
+
+  const visibleKeys = customFieldsFilterMode === "available"
+    ? customKeys.filter((k) => availableKeys.has(k))
+    : customKeys;
+
+  for (const key of visibleKeys) {
+    const name = nameMap.get(key) ?? key;
+    const isAvailable = availableKeys.has(key);
+
+    const row = document.createElement("div");
+    row.className = `checkbox-row${isAvailable ? "" : " unavailable"}`;
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = true;
+    checkbox.id = `chk-${key}`;
+    if (!isAvailable) {
+      checkbox.disabled = true;
+    }
+
+    const label = document.createElement("label");
+    label.htmlFor = `chk-${key}`;
+    label.textContent = name;
+
+    row.appendChild(checkbox);
+    row.appendChild(label);
+    customFieldsList.appendChild(row);
+  }
+
+  show(customFieldsSection);
+}
+
+customFieldsFilter.addEventListener("click", (e) => {
+  const btn = (e.target as HTMLElement).closest(".segment") as HTMLButtonElement | null;
+  if (!btn) return;
+  const filter = btn.dataset.filter as "available" | "all";
+  if (filter === customFieldsFilterMode) return;
+
+  customFieldsFilterMode = filter;
+  customFieldsFilter.querySelectorAll(".segment").forEach((s) => s.classList.remove("active"));
+  btn.classList.add("active");
+
+  if (store.state.currentIssue) {
+    renderCustomFields(store.state.currentIssue.fields, targetAvailableFields);
+  }
+});
 
 // ─── Project / Issue type loading ────────────────────
 async function loadProjects() {
@@ -352,9 +421,13 @@ selectProject.addEventListener("change", async () => {
   }
 });
 
-selectIssueType.addEventListener("change", () => {
+selectIssueType.addEventListener("change", async () => {
   store.setSelectedIssueType(selectIssueType.value);
-  checkMissingFields();
+  await checkMissingFields();
+  await updateTargetFields();
+  if (store.state.currentIssue) {
+    renderCustomFields(store.state.currentIssue.fields, targetAvailableFields);
+  }
 });
 
 async function checkMissingFields() {
@@ -414,6 +487,20 @@ async function checkMissingFields() {
   }
 }
 
+async function updateTargetFields() {
+  const projectKey = selectProject.value;
+  const issueTypeId = selectIssueType.value;
+  if (!projectKey || !issueTypeId) {
+    targetAvailableFields = [];
+    return;
+  }
+  try {
+    targetAvailableFields = await fetchTargetFields(projectKey, issueTypeId);
+  } catch {
+    targetAvailableFields = [];
+  }
+}
+
 // ─── Clone execution ─────────────────────────────────
 btnClone.addEventListener("click", async () => {
   const sourceIssueKey = store.state.currentIssue?.key;
@@ -436,6 +523,13 @@ btnClone.addEventListener("click", async () => {
     copyDescription: chkDescription.checked,
     copyPriority: chkPriority.checked,
   };
+
+  const customFieldKeys = targetAvailableFields
+    .map((f) => f.key)
+    .filter((key) => {
+      const el = document.getElementById(`chk-${key}`) as HTMLInputElement | null;
+      return el && el.checked;
+    });
 
   store.resetClone();
   store.setClonePhase("cloning");
@@ -460,6 +554,7 @@ btnClone.addEventListener("click", async () => {
         config.copySummary,
         config.copyDescription,
         config.copyPriority,
+        customFieldKeys,
       );
       store.setCloneResult(result);
       store.setClonePhase("complete");
@@ -549,6 +644,12 @@ function showResult(result: CloneResult) {
   if (result.comments_copied > 0) parts.push(t("clone.result.comments", { count: result.comments_copied }));
   if (result.attachments_copied > 0) parts.push(t("clone.result.attachments", { count: result.attachments_copied }));
   if (result.link_created) parts.push(t("clone.result.link"));
+  if (result.skipped_custom_fields.length > 0) {
+    const skippedNames = result.skipped_custom_fields
+      .map((key) => fieldMetadata.find((f) => f.key === key)?.name ?? key)
+      .join(", ");
+    parts.push(`Skipped custom fields: ${skippedNames}`);
+  }
   resultSummary.textContent = parts.join(" \u2022 ");
   show(resultSection);
   hide(progressSection);
@@ -575,6 +676,8 @@ btnCloneAnother.addEventListener("click", () => {
   hide(cloneConfigSection);
   hide(issuePreviewSection);
   hide(progressSection);
+  hide(customFieldsSection);
+  targetAvailableFields = [];
   inputIssueKey.value = "";
   selectProject.value = "";
   selectIssueType.innerHTML = `<option value="">${t("clone.targetIssueTypePlaceholder")}</option>`;
@@ -740,6 +843,7 @@ async function init() {
     initDisconnect();
     document.documentElement.style.visibility = "";
     await checkConnection();
+    fetchFieldMetadata().then((meta) => { fieldMetadata = meta; }).catch(() => {});
   } catch (error) {
     const msg = error instanceof Error ? error.message : "Unknown error";
     showError("Nova Clone", `Init failed: ${msg}`);

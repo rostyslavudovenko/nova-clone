@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import type { JiraIssue, ProjectSummary, CreatemetaResult, CloneResult } from "./state";
+import type { JiraIssue, ProjectSummary, CreatemetaResult, CloneResult, FieldInfo } from "./state";
 
 export interface ConnectionStatus {
   connected: boolean;
@@ -50,6 +50,7 @@ export async function cloneIssue(
   copySummary: boolean,
   copyDescription: boolean,
   copyPriority: boolean,
+  customFieldKeys: string[],
 ): Promise<CloneResult> {
   return invoke<CloneResult>("clone_issue", {
     sourceIssueKey,
@@ -61,7 +62,16 @@ export async function cloneIssue(
     copySummary,
     copyDescription,
     copyPriority,
+    customFieldKeys,
   });
+}
+
+export async function fetchFieldMetadata(): Promise<FieldInfo[]> {
+  return invoke<FieldInfo[]>("fetch_field_metadata");
+}
+
+export async function fetchTargetFields(projectKey: string, issueTypeId: string): Promise<FieldInfo[]> {
+  return invoke<FieldInfo[]>("fetch_target_fields", { projectKey, issueTypeId });
 }
 
 export async function getHistory(): Promise<import("./state").HistoryEntry[]> {

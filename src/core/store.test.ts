@@ -77,6 +77,7 @@ describe("store", () => {
       attachments_copied: 0,
       link_created: false,
       site_url: "https://test.atlassian.net",
+      skipped_custom_fields: [],
     });
 
     store.resetClone();

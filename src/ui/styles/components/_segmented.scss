@@ -1,0 +1,42 @@
+.custom-fields-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  .card-title {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}
+
+.segmented-control {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+
+  .segment {
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border: none;
+    background: transparent;
+    color: var(--ink-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    line-height: 1;
+
+    &:hover:not(.active) {
+      background: var(--paper);
+    }
+
+    &.active {
+      background: var(--primary-bg);
+      color: var(--primary);
+      font-weight: 600;
+    }
+  }
+}
