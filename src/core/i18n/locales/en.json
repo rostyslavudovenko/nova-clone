@@ -29,8 +29,11 @@
     "title": "Clone Issue",
     "issueKey": "Issue Key",
     "issueKeyPlaceholder": "Enter issue key (e.g. ABC-123) or paste URL",
+    "issueKeyPlaceholderMultiple": "Enter issue keys separated by commas (e.g. ABC-123, DEF-456)",
     "lookup": "Look Up",
-    "preview": "Issue Preview",
+    "fetchedOne": "Successfully fetched 1 issue",
+    "fetchedMultiple": "Successfully fetched {{count}} issues",
+    "cloningProgress": "Cloning {{current}}/{{total}}: {{key}}...",
     "issueNotFound": "Issue not found. Check the key and try again.",
     "invalidCharacters": "Only Latin letters, hyphens, and digits are allowed (e.g. ABC-123)",
     "targetProject": "Target Project",
@@ -67,6 +70,9 @@
       "link": "Issue link created",
       "openInBrowser": "Open in Browser",
       "cloneAnother": "Clone Another Issue"
+    },
+    "resultList": {
+      "title": "{{success}} of {{total}} issues cloned successfully"
     }
   },
   "history": {
@@ -89,6 +95,7 @@
   "notification": {
     "cloneComplete": "Clone complete: {{key}}",
     "cloneFailed": "Clone failed: {{error}}",
+    "cloneMultipleComplete": "{{success}} of {{total}} issues cloned successfully",
     "disconnected": "Disconnected from Jira"
   },
   "error": {

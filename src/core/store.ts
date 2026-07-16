@@ -11,17 +11,21 @@ import type {
   ClonePhase,
 } from "./state";
 
+export type CloneMode = "single" | "multiple";
+
 interface AppState {
   connectionStatus: ConnectionStatus;
   connection: ConnectionConfig | null;
   connectError: string | null;
 
   currentIssue: JiraIssue | null;
+  currentIssueKeys: string[];
   projects: ProjectSummary[];
   issueTypes: IssueTypeMeta[];
   selectedProject: string | null;
   selectedIssueType: string | null;
 
+  cloneMode: CloneMode;
   cloneConfig: CloneConfig;
   clonePhase: ClonePhase;
   cloneProgress: ProgressEvent[];
@@ -47,11 +51,13 @@ function createInitialState(): AppState {
     connectError: null,
 
     currentIssue: null,
+    currentIssueKeys: [],
     projects: [],
     issueTypes: [],
     selectedProject: null,
     selectedIssueType: null,
 
+    cloneMode: "single",
     cloneConfig: createInitialCloneConfig(),
     clonePhase: "idle",
     cloneProgress: [],
@@ -83,6 +89,12 @@ export const store = {
   },
   setCurrentIssue(issue: JiraIssue | null): void {
     zustandStore.setState({ currentIssue: issue });
+  },
+  setCurrentIssueKeys(keys: string[]): void {
+    zustandStore.setState({ currentIssueKeys: keys });
+  },
+  setCloneMode(mode: CloneMode): void {
+    zustandStore.setState({ cloneMode: mode });
   },
   setProjects(projects: ProjectSummary[]): void {
     zustandStore.setState({ projects });
@@ -129,6 +141,7 @@ export const store = {
       cloneError: null,
       cloneConfig: createInitialCloneConfig(),
       currentIssue: null,
+      currentIssueKeys: [],
       selectedProject: null,
       selectedIssueType: null,
       issueTypes: [],

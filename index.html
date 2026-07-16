@@ -112,7 +112,13 @@
               <div id="clone-view" class="clone-flow hidden">
                 <!-- Issue Lookup -->
                 <div class="card" id="issue-lookup-section">
-                  <div class="card-title" data-i18n="clone.title">Clone Issue</div>
+                  <div class="card-header-row">
+                    <div class="card-title" data-i18n="clone.title">Clone Issue</div>
+                    <div class="segmented-control" id="clone-mode-filter">
+                      <button class="segment active" data-mode="single">Single</button>
+                      <button class="segment" data-mode="multiple">Multiple</button>
+                    </div>
+                  </div>
                   <div class="input-with-button">
                     <input
                       id="input-issue-key"
@@ -122,6 +128,7 @@
                     <button class="btn btn-primary" id="btn-lookup" data-i18n="clone.lookup">Look Up</button>
                   </div>
                   <div id="issue-error" class="connect-error hidden"></div>
+                  <div id="fetch-success" class="fetch-success hidden"></div>
                 </div>
 
                 <!-- Clone Config (full width) -->
@@ -185,7 +192,7 @@
                     </div>
 
                     <div id="custom-fields-section" class="hidden" style="margin-top: 20px;">
-                      <div class="custom-fields-header">
+                      <div class="card-header-row">
                         <div class="card-title">Custom Fields</div>
                         <div class="segmented-control" id="custom-fields-filter">
                           <button class="segment active" data-filter="available">Available</button>
@@ -199,70 +206,33 @@
                   </div>
                 </div>
 
-                <!-- Two Column Grid: Preview + Progress/Result -->
-                <div class="clone-grid">
-                  <!-- Left Column: Source Issue Preview -->
-                  <div class="clone-grid-left">
-                    <div id="issue-preview-section" class="hidden">
-                      <div class="card preview-card-outer">
-                        <div class="card-title" data-i18n="clone.preview">Source Issue</div>
-                        <div class="issue-detail">
-                          <div class="issue-header">
-                            <span class="issue-key-badge" id="preview-key"></span>
-                            <span class="badge" id="preview-status"></span>
-                          </div>
-                          <h3 class="issue-title" id="preview-summary"></h3>
-                          <div class="divider"></div>
-                          <div class="issue-properties">
-                            <div class="property-row">
-                              <span class="property-label">Type</span>
-                              <span class="property-value" id="preview-type"></span>
-                            </div>
-                            <div class="property-row">
-                              <span class="property-label">Reporter</span>
-                              <span class="property-value" id="preview-reporter"></span>
-                            </div>
-                            <div class="property-row">
-                              <span class="property-label">Assignee</span>
-                              <span class="property-value" id="preview-assignee"></span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                <!-- Progress + Result -->
+                <div id="progress-section" class="hidden">
+                  <div class="card">
+                    <div class="card-title">Progress</div>
+                    <div class="progress-steps" id="progress-steps"></div>
                   </div>
+                </div>
 
-                  <!-- Right Column: Progress + Result -->
-                  <div class="clone-grid-right">
-                    <!-- Progress -->
-                    <div id="progress-section" class="hidden">
-                      <div class="card">
-                        <div class="card-title">Progress</div>
-                        <div class="progress-steps" id="progress-steps"></div>
+                <div id="result-section" class="hidden">
+                  <div class="card">
+                    <div id="result-success" class="clone-result hidden">
+                      <div class="result-icon result-icon--success">&#10003;</div>
+                      <div class="result-title" data-i18n="clone.success">Issue cloned successfully</div>
+                      <div class="result-key" id="result-key"></div>
+                      <div class="result-summary" id="result-summary"></div>
+                      <div style="display: flex; gap: 8px; justify-content: center;">
+                        <button class="btn btn-primary" id="btn-open-browser" data-i18n="clone.result.openInBrowser">Open in Browser</button>
+                        <button class="btn btn-ghost" id="btn-clone-another" data-i18n="clone.result.cloneAnother">Clone Another Issue</button>
                       </div>
                     </div>
-
-                    <!-- Result -->
-                    <div id="result-section" class="hidden">
-                      <div class="card">
-                        <div id="result-success" class="clone-result hidden">
-                          <div class="result-icon result-icon--success">&#10003;</div>
-                          <div class="result-title" data-i18n="clone.success">Issue cloned successfully</div>
-                          <div class="result-key" id="result-key"></div>
-                          <div class="result-summary" id="result-summary"></div>
-                          <div style="display: flex; gap: 8px; justify-content: center;">
-                            <button class="btn btn-primary" id="btn-open-browser" data-i18n="clone.result.openInBrowser">Open in Browser</button>
-                            <button class="btn btn-ghost" id="btn-clone-another" data-i18n="clone.result.cloneAnother">Clone Another Issue</button>
-                          </div>
-                        </div>
-                        <div id="result-error" class="clone-result hidden">
-                          <div class="result-icon result-icon--error">&#10007;</div>
-                          <div class="result-title" data-i18n="clone.error">Clone failed</div>
-                          <div class="result-desc" id="result-error-desc"></div>
-                          <button class="btn btn-primary" id="btn-retry">Retry</button>
-                        </div>
-                      </div>
+                    <div id="result-error" class="clone-result hidden">
+                      <div class="result-icon result-icon--error">&#10007;</div>
+                      <div class="result-title" data-i18n="clone.error">Clone failed</div>
+                      <div class="result-desc" id="result-error-desc"></div>
+                      <button class="btn btn-primary" id="btn-retry">Retry</button>
                     </div>
+                    <div id="result-list" class="result-list hidden"></div>
                   </div>
                 </div>
               </div>

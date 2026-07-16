@@ -50,13 +50,8 @@ const connectError = $("connect-error")!;
 const inputIssueKey = $("input-issue-key") as HTMLInputElement;
 const btnLookup = $("btn-lookup") as HTMLButtonElement;
 const issueError = $("issue-error")!;
-const issuePreviewSection = $("issue-preview-section")!;
-const previewSummary = $("preview-summary")!;
-const previewKey = $("preview-key")!;
-const previewType = $("preview-type")!;
-const previewStatus = $("preview-status")!;
-const previewReporter = $("preview-reporter")!;
-const previewAssignee = $("preview-assignee")!;
+const fetchSuccess = $("fetch-success")!;
+const cloneModeFilter = $("clone-mode-filter")!;
 const cloneConfigSection = $("clone-config-section")!;
 const selectProject = $("select-project") as HTMLSelectElement;
 const selectIssueType = $("select-issuetype") as HTMLSelectElement;
@@ -76,6 +71,7 @@ const progressSteps = $("progress-steps")!;
 const resultSection = $("result-section")!;
 const resultSuccess = $("result-success")!;
 const resultError = $("result-error")!;
+const resultList = $("result-list")!;
 const resultKey = $("result-key")!;
 const resultSummary = $("result-summary")!;
 const resultErrorDesc = $("result-error-desc")!;
@@ -101,6 +97,9 @@ const languageSelect = $("language-select") as HTMLSelectElement;
 let fieldMetadata: FieldInfo[] = [];
 let targetAvailableFields: FieldInfo[] = [];
 let customFieldsFilterMode: "available" | "all" = "available";
+
+// Clone mode state
+let fetchedIssues: JiraIssue[] = [];
 
 // ─── State helpers ───────────────────────────────────
 function show(view: HTMLElement) {
@@ -194,7 +193,7 @@ function showDisconnectedUI() {
   hide(cloneView);
   hide(progressSection);
   hide(resultSection);
-  hide(issuePreviewSection);
+  hide(fetchSuccess);
   hide(cloneConfigSection);
   connectError.classList.add("hidden");
 }
@@ -268,6 +267,14 @@ btnLookup.addEventListener("click", async () => {
   const raw = inputIssueKey.value.trim();
   if (!raw) return;
 
+  if (store.state.cloneMode === "single") {
+    await lookupSingle(raw);
+  } else {
+    await lookupMultiple(raw);
+  }
+});
+
+async function lookupSingle(raw: string) {
   const key = parseIssueKey(raw);
   if (!key || !/^[A-Z][A-Z0-9]+-\d+$/i.test(key)) {
     inputIssueKey.classList.add("input-error");
@@ -278,15 +285,17 @@ btnLookup.addEventListener("click", async () => {
 
   inputIssueKey.classList.remove("input-error");
   issueError.classList.add("hidden");
+  hide(fetchSuccess);
   setButtonLoading(btnLookup, true, "clone.lookup");
 
   try {
     const issue = await fetchIssue(key);
     store.setCurrentIssue(issue);
-    renderPreview(issue);
+    store.setCurrentIssueKeys([key]);
+    fetchedIssues = [issue];
     hide(issueError);
-    show(issuePreviewSection);
-    store.setClonePhase("preview");
+    showFetchSuccess(1);
+    store.setClonePhase("configuring");
     show(cloneConfigSection);
     renderCustomFields(issue.fields, targetAvailableFields);
   } catch (error) {
@@ -294,12 +303,85 @@ btnLookup.addEventListener("click", async () => {
     issueError.textContent =
       typeof error === "string" ? error : error instanceof Error ? error.message : t("clone.issueNotFound");
     issueError.classList.remove("hidden");
-    hide(issuePreviewSection);
+    hide(fetchSuccess);
     hide(cloneConfigSection);
   } finally {
     setButtonLoading(btnLookup, false, "clone.lookup");
   }
-});
+}
+
+async function lookupMultiple(raw: string) {
+  const parts = raw.split(",").map((s) => s.trim()).filter(Boolean);
+  const keys: string[] = [];
+  const invalidKeys: string[] = [];
+
+  for (const part of parts) {
+    const key = parseIssueKey(part);
+    if (key && /^[A-Z][A-Z0-9]+-\d+$/i.test(key)) {
+      if (!keys.includes(key)) {
+        keys.push(key);
+      }
+    } else {
+      invalidKeys.push(part);
+    }
+  }
+
+  if (invalidKeys.length > 0) {
+    inputIssueKey.classList.add("input-error");
+    issueError.textContent = t("clone.invalidCharacters");
+    issueError.classList.remove("hidden");
+    return;
+  }
+
+  if (keys.length === 0) {
+    inputIssueKey.classList.add("input-error");
+    issueError.textContent = t("clone.issueNotFound");
+    issueError.classList.remove("hidden");
+    return;
+  }
+
+  inputIssueKey.classList.remove("input-error");
+  issueError.classList.add("hidden");
+  hide(fetchSuccess);
+  setButtonLoading(btnLookup, true, "clone.lookup");
+
+  try {
+    fetchedIssues = [];
+    const results = await Promise.allSettled(keys.map((k) => fetchIssue(k)));
+
+    for (let i = 0; i < results.length; i++) {
+      const result = results[i];
+      if (result.status === "fulfilled") {
+        fetchedIssues.push(result.value);
+      }
+    }
+
+    if (fetchedIssues.length === 0) {
+      inputIssueKey.classList.add("input-error");
+      issueError.textContent = t("clone.issueNotFound");
+      issueError.classList.remove("hidden");
+      return;
+    }
+
+    store.setCurrentIssue(fetchedIssues[0]);
+    store.setCurrentIssueKeys(fetchedIssues.map((i) => i.key));
+
+    hide(issueError);
+    showFetchSuccess(fetchedIssues.length);
+    store.setClonePhase("configuring");
+    show(cloneConfigSection);
+    renderCustomFields(fetchedIssues[0].fields, targetAvailableFields);
+  } catch (error) {
+    inputIssueKey.classList.add("input-error");
+    issueError.textContent =
+      typeof error === "string" ? error : error instanceof Error ? error.message : t("clone.issueNotFound");
+    issueError.classList.remove("hidden");
+    hide(fetchSuccess);
+    hide(cloneConfigSection);
+  } finally {
+    setButtonLoading(btnLookup, false, "clone.lookup");
+  }
+}
 
 inputIssueKey.addEventListener("keydown", (e) => {
   if (e.key === "Enter") btnLookup.click();
@@ -309,14 +391,10 @@ inputIssueKey.addEventListener("keydown", (e) => {
   input.addEventListener("input", () => input.classList.remove("input-error"));
 });
 
-function renderPreview(issue: JiraIssue) {
-  previewSummary.textContent = issue.summary;
-  previewKey.textContent = issue.key;
-  previewType.textContent = issue.issue_type;
-  previewStatus.textContent = issue.status;
-  previewStatus.className = `badge badge--info`;
-  previewReporter.textContent = issue.reporter ?? "None";
-  previewAssignee.textContent = issue.assignee ?? "Unassigned";
+function showFetchSuccess(count: number) {
+  const key = count === 1 ? "clone.fetchedOne" : "clone.fetchedMultiple";
+  fetchSuccess.textContent = t(key, { count });
+  show(fetchSuccess);
 }
 
 function renderCustomFields(sourceFields: Record<string, unknown>, available: FieldInfo[]) {
@@ -374,6 +452,32 @@ customFieldsFilter.addEventListener("click", (e) => {
 
   if (store.state.currentIssue) {
     renderCustomFields(store.state.currentIssue.fields, targetAvailableFields);
+  }
+});
+
+// ─── Clone mode toggle ───────────────────────────────
+cloneModeFilter.addEventListener("click", (e) => {
+  const btn = (e.target as HTMLElement).closest(".segment") as HTMLButtonElement | null;
+  if (!btn) return;
+  const mode = btn.dataset.mode as "single" | "multiple";
+  if (mode === store.state.cloneMode) return;
+
+  store.setCloneMode(mode);
+  cloneModeFilter.querySelectorAll(".segment").forEach((s) => s.classList.remove("active"));
+  btn.classList.add("active");
+
+  inputIssueKey.value = "";
+  hide(fetchSuccess);
+  hide(cloneConfigSection);
+  hide(resultSection);
+  hide(progressSection);
+  issueError.classList.add("hidden");
+  fetchedIssues = [];
+
+  if (mode === "single") {
+    inputIssueKey.placeholder = t("clone.issueKeyPlaceholder");
+  } else {
+    inputIssueKey.placeholder = t("clone.issueKeyPlaceholderMultiple");
   }
 });
 
@@ -503,17 +607,22 @@ async function updateTargetFields() {
 
 // ─── Clone execution ─────────────────────────────────
 btnClone.addEventListener("click", async () => {
-  const sourceIssueKey = store.state.currentIssue?.key;
   const targetProjectKey = selectProject.value;
   const targetIssueTypeId = selectIssueType.value;
 
-  if (!sourceIssueKey || !targetProjectKey || !targetIssueTypeId) {
+  if (!targetProjectKey || !targetIssueTypeId) {
     showToast("Please configure all clone options", "error");
     return;
   }
 
+  const customFieldKeys = targetAvailableFields
+    .map((f) => f.key)
+    .filter((key) => {
+      const el = document.getElementById(`chk-${key}`) as HTMLInputElement | null;
+      return el && el.checked;
+    });
+
   const config = {
-    sourceIssueKey,
     targetProjectKey,
     targetIssueTypeId,
     copyComments: chkComments.checked,
@@ -524,19 +633,39 @@ btnClone.addEventListener("click", async () => {
     copyPriority: chkPriority.checked,
   };
 
-  const customFieldKeys = targetAvailableFields
-    .map((f) => f.key)
-    .filter((key) => {
-      const el = document.getElementById(`chk-${key}`) as HTMLInputElement | null;
-      return el && el.checked;
-    });
-
+  const sourceIssueKeys = [...store.state.currentIssueKeys];
   store.resetClone();
   store.setClonePhase("cloning");
   progressSteps.innerHTML = "";
-  show(progressSection);
   hide(resultSection);
+  hide(resultList);
+  hide(resultSuccess);
+  hide(resultError);
+  show(progressSection);
   setButtonLoading(btnClone, true, "clone.cloning");
+
+  if (store.state.cloneMode === "single") {
+    await cloneSingle(sourceIssueKeys[0], config, customFieldKeys);
+  } else {
+    await cloneMultiple(sourceIssueKeys, config, customFieldKeys);
+  }
+});
+
+async function cloneSingle(
+  sourceIssueKey: string,
+  config: {
+    targetProjectKey: string;
+    targetIssueTypeId: string;
+    copyComments: boolean;
+    copyAttachments: boolean;
+    copyLinks: boolean;
+    copySummary: boolean;
+    copyDescription: boolean;
+    copyPriority: boolean;
+  },
+  customFieldKeys: string[],
+) {
+  if (!sourceIssueKey) return;
 
   try {
     const unlisten = await listen<ProgressEvent>("clone-progress", (event) => {
@@ -545,7 +674,7 @@ btnClone.addEventListener("click", async () => {
 
     try {
       const result = await cloneIssue(
-        config.sourceIssueKey,
+        sourceIssueKey,
         config.targetProjectKey,
         config.targetIssueTypeId,
         config.copyComments,
@@ -572,7 +701,73 @@ btnClone.addEventListener("click", async () => {
   } finally {
     setButtonLoading(btnClone, false, "clone.startClone");
   }
-});
+}
+
+async function cloneMultiple(
+  keys: string[],
+  config: {
+    targetProjectKey: string;
+    targetIssueTypeId: string;
+    copyComments: boolean;
+    copyAttachments: boolean;
+    copyLinks: boolean;
+    copySummary: boolean;
+    copyDescription: boolean;
+    copyPriority: boolean;
+  },
+  customFieldKeys: string[],
+) {
+  if (keys.length === 0) return;
+
+  const results: Array<{ sourceKey: string; result?: CloneResult; error?: string }> = [];
+
+  const unlisten = await listen<ProgressEvent>("clone-progress", (event) => {
+    handleProgress(event.payload);
+  });
+
+  try {
+    for (let i = 0; i < keys.length; i++) {
+      const sourceKey = keys[i];
+      progressSteps.innerHTML = "";
+
+      const header = document.createElement("div");
+      header.className = "progress-header";
+      header.textContent = t("clone.cloningProgress", { current: i + 1, total: keys.length, key: sourceKey });
+      progressSteps.appendChild(header);
+
+      try {
+        const result = await cloneIssue(
+          sourceKey,
+          config.targetProjectKey,
+          config.targetIssueTypeId,
+          config.copyComments,
+          config.copyAttachments,
+          config.copyLinks,
+          config.copySummary,
+          config.copyDescription,
+          config.copyPriority,
+          customFieldKeys,
+        );
+        results.push({ sourceKey, result });
+      } catch (error) {
+        const msg = typeof error === "string" ? error : error instanceof Error ? error.message : "Clone failed";
+        results.push({ sourceKey, error: msg });
+      }
+    }
+
+    store.setClonePhase("complete");
+    showMultipleResults(results);
+    const successCount = results.filter((r) => r.result).length;
+    await notify("Nova Clone", t("notification.cloneMultipleComplete", { success: successCount, total: keys.length }));
+  } catch (error) {
+    store.setClonePhase("error");
+    const msg = typeof error === "string" ? error : error instanceof Error ? error.message : "Clone failed";
+    showErrorResult(msg);
+  } finally {
+    unlisten();
+    setButtonLoading(btnClone, false, "clone.startClone");
+  }
+}
 
 function handleProgress(event: ProgressEvent) {
   store.addProgressEvent(event);
@@ -663,6 +858,62 @@ function showErrorResult(msg: string) {
   hide(progressSection);
 }
 
+function showMultipleResults(results: Array<{ sourceKey: string; result?: CloneResult; error?: string }>) {
+  hide(resultSuccess);
+  hide(resultError);
+  hide(progressSection);
+  show(resultSection);
+
+  resultList.innerHTML = "";
+  const successCount = results.filter((r) => r.result).length;
+
+  const header = document.createElement("div");
+  header.className = "result-list-header";
+  header.textContent = t("clone.resultList.title", { success: successCount, total: results.length });
+  resultList.appendChild(header);
+
+  for (const item of results) {
+    const row = document.createElement("div");
+    row.className = `result-item${item.error ? " result-item--error" : ""}`;
+
+    const source = document.createElement("span");
+    source.className = "result-item-key";
+    source.textContent = item.sourceKey;
+
+    const arrow = document.createElement("span");
+    arrow.className = "result-item-arrow";
+    arrow.textContent = "\u2192";
+
+    const target = document.createElement("span");
+    target.className = "result-item-key";
+
+    if (item.result) {
+      target.textContent = item.result.new_issue_key;
+      const badge = document.createElement("span");
+      badge.className = "badge badge--success";
+      badge.textContent = "\u2713";
+      row.appendChild(source);
+      row.appendChild(arrow);
+      row.appendChild(target);
+      row.appendChild(badge);
+    } else {
+      target.textContent = item.error ?? "Failed";
+      target.classList.add("result-item-error-text");
+      const badge = document.createElement("span");
+      badge.className = "badge badge--error";
+      badge.textContent = "\u2717";
+      row.appendChild(source);
+      row.appendChild(arrow);
+      row.appendChild(target);
+      row.appendChild(badge);
+    }
+
+    resultList.appendChild(row);
+  }
+
+  show(resultList);
+}
+
 btnOpenBrowser.addEventListener("click", () => {
   const result = store.state.cloneResult;
   if (!result) return;
@@ -673,11 +924,15 @@ btnOpenBrowser.addEventListener("click", () => {
 btnCloneAnother.addEventListener("click", () => {
   store.resetClone();
   hide(resultSection);
+  hide(resultList);
+  hide(resultSuccess);
+  hide(resultError);
   hide(cloneConfigSection);
-  hide(issuePreviewSection);
+  hide(fetchSuccess);
   hide(progressSection);
   hide(customFieldsSection);
   targetAvailableFields = [];
+  fetchedIssues = [];
   inputIssueKey.value = "";
   selectProject.value = "";
   selectIssueType.innerHTML = `<option value="">${t("clone.targetIssueTypePlaceholder")}</option>`;

@@ -7,7 +7,7 @@ Built with **Tauri v2**, **Vite 8**, **TypeScript 6**, and **SCSS**. The Rust ba
 ## How It Works
 
 1. **Connect** — enter your Jira Cloud site URL, email, and an [Atlassian API token](https://id.atlassian.com/manage-profile/security/api-tokens)
-2. **Look Up** — paste an issue key (e.g. `ABC-123`) or a full Jira URL; the app fetches a preview with summary, type, status, and assignee
+2. **Look Up** — paste an issue key (e.g. `ABC-123`) or a full Jira URL; the app validates and fetches the issue, showing a success message
 3. **Configure** — select the target project and issue type, choose which system fields to copy (summary, description, priority), and toggle clone options (comments, attachments, link to original)
 4. **Clone** — the Rust backend orchestrates the full clone pipeline with real-time progress events
 
@@ -16,14 +16,15 @@ The app supports both English and Ukrainian interfaces and remembers your connec
 ## Features
 
 - Connect to any Jira Cloud instance via email + API token
-- Look up issues by key or URL with instant preview
+- Look up issues by key or URL with input validation (Latin letters, hyphens, digits only)
+- Single or Multiple clone mode — clone one issue or batch-clone multiple issues separated by commas
 - Clone to any accessible project and issue type (paginated project list, auto-refreshes on view switch)
 - Copy comments from source to cloned issue
 - Copy attachments (download from source, upload to clone)
 - Link cloned issue to original via "Relates" link type
 - Smart field transformation — skips system fields, rank fields, entity references, and user arrays; optionally copies `summary`, `description`, `priority`, and selected custom fields
 - Custom fields section with Available/All filter — shows all custom fields from the source issue with human-readable names; unavailable fields in the target project are automatically disabled; skipped fields are reported in the clone result
-- Real-time clone progress with step-by-step status
+- Real-time clone progress — step-by-step status for single clone, issue-by-issue progress for batch clone
 - Clone history with open-in-browser, timestamps, and status
 - Desktop notifications on clone completion and errors
 - Connection persistence across app restarts

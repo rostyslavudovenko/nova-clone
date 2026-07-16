@@ -29,8 +29,11 @@
     "title": "Клонувати задачу",
     "issueKey": "Ключ задачі",
     "issueKeyPlaceholder": "Введіть ключ (напр. ABC-123) або вставте URL",
+    "issueKeyPlaceholderMultiple": "Введіть ключі задач через кому (напр. ABC-123, DEF-456)",
     "lookup": "Знайти",
-    "preview": "Попередній перегляд",
+    "fetchedOne": "Успішно отримано 1 задачу",
+    "fetchedMultiple": "Успішно отримано {{count}} задач",
+    "cloningProgress": "Клонування {{current}}/{{total}}: {{key}}...",
     "issueNotFound": "Задачу не знайдено. Перевірте ключ.",
     "invalidCharacters": "Допускаються лише латинські літери, дефіси та цифри (наприклад, ABC-123)",
     "targetProject": "Проєкт призначення",
@@ -67,6 +70,9 @@
       "link": "Створено зв'язок задач",
       "openInBrowser": "Відкрити в браузері",
       "cloneAnother": "Клонувати іншу задачу"
+    },
+    "resultList": {
+      "title": "{{success}} з {{total}} задач успішно склоновано"
     }
   },
   "history": {
@@ -89,6 +95,7 @@
   "notification": {
     "cloneComplete": "Клонування завершено: {{key}}",
     "cloneFailed": "Помилка клонування: {{error}}",
+    "cloneMultipleComplete": "{{success}} з {{total}} задач успішно склоновано",
     "disconnected": "Відключено від Jira"
   },
   "error": {
