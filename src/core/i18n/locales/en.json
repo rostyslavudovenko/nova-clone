@@ -32,6 +32,7 @@
     "lookup": "Look Up",
     "preview": "Issue Preview",
     "issueNotFound": "Issue not found. Check the key and try again.",
+    "invalidCharacters": "Only Latin letters, hyphens, and digits are allowed (e.g. ABC-123)",
     "targetProject": "Target Project",
     "targetProjectPlaceholder": "Select a project...",
     "loadingProjects": "Loading projects...",

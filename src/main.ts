@@ -269,9 +269,9 @@ btnLookup.addEventListener("click", async () => {
   if (!raw) return;
 
   const key = parseIssueKey(raw);
-  if (!key) {
+  if (!key || !/^[A-Z][A-Z0-9]+-\d+$/i.test(key)) {
     inputIssueKey.classList.add("input-error");
-    issueError.textContent = t("clone.issueNotFound");
+    issueError.textContent = t("clone.invalidCharacters");
     issueError.classList.remove("hidden");
     return;
   }
