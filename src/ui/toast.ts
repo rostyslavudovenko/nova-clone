@@ -16,7 +16,7 @@ function getContainer(): HTMLElement {
   return el;
 }
 
-function remove(toast: ToastElement): void {
+function remove(toast: ToastElement) {
   clearTimeout(toast._timer);
   toast.classList.remove("toast--visible");
   toast.classList.add("toast--leaving");
@@ -25,7 +25,7 @@ function remove(toast: ToastElement): void {
   }, LEAVE_DURATION_MS);
 }
 
-export function showToast(message: string, type: ToastType = "info", duration: number = 4000): void {
+export function showToast(message: string, type: ToastType = "info", duration: number = 4000) {
   const container = getContainer();
   const toast: ToastElement = document.createElement("div");
   toast.className = `toast toast--${type}`;

@@ -78,6 +78,7 @@ describe("getMissingRequiredFields", () => {
     expect(getMissingRequiredFields(issueType, sourceFields)).toEqual([]);
   });
 
+  // custom fields not present in source should be flagged as missing
   it("includes customfield in missing list if not present in source", () => {
     const issueType: IssueTypeMeta = {
       id: "10001",

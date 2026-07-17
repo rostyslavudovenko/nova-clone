@@ -18,6 +18,7 @@ describe("parseIssueKey", () => {
     expect(parseIssueKey("  random text  ")).toBe("random text");
   });
 
+  // empty string should pass through without throwing
   it("handles empty string", () => {
     expect(parseIssueKey("")).toBe("");
   });

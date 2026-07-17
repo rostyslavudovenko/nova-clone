@@ -54,6 +54,7 @@ describe("withRetry", () => {
     expect(fn).toHaveBeenCalledTimes(3);
   });
 
+  // retries should stop after maxRetries and propagate the last error
   it("throws after exhausting retries", async () => {
     const fn = vi.fn().mockRejectedValue(new Error("persistent"));
     await expect(withRetry(fn, 2, 10)).rejects.toThrow("persistent");

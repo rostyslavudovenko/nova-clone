@@ -17,12 +17,11 @@ import {
 } from "./core/jira-client";
 import { notify } from "./core/notify";
 import { setupI18n, updateUI, switchLocale, t } from "./core/i18n/i18n";
-import { showError } from "./core/errors";
+import { showError, getErrorMessage } from "./core/errors";
 import { showToast } from "./ui/toast";
 import { listen } from "@tauri-apps/api/event";
 import { open } from "@tauri-apps/plugin-shell";
 
-// ─── DOM refs ────────────────────────────────────────
 const $ = (id: string) => document.getElementById(id);
 
 // Views and Navigation
@@ -101,7 +100,6 @@ let customFieldsFilterMode: "available" | "all" = "available";
 // Clone mode state
 let fetchedIssues: JiraIssue[] = [];
 
-// ─── State helpers ───────────────────────────────────
 function show(view: HTMLElement) {
   view.classList.remove("hidden");
 }
@@ -114,7 +112,6 @@ function setButtonLoading(btn: HTMLButtonElement, loading: boolean, labelKey?: s
   btn.textContent = loading ? t(labelKey ?? "connect.connecting") : t(labelKey ?? "connect.connect");
 }
 
-// ─── View switcher ───────────────────────────────────
 function switchView(target: "clone" | "history" | "settings" | "about") {
   allViews.forEach((v) => hide(v));
   allNavItems.forEach((item) => item.classList.remove("active"));
@@ -159,7 +156,6 @@ navAbout.addEventListener("click", (e) => {
   switchView("about");
 });
 
-// ─── Connection flow ─────────────────────────────────
 async function checkConnection() {
   try {
     store.setConnectionStatus("connecting");
@@ -198,7 +194,6 @@ function showDisconnectedUI() {
   connectError.classList.add("hidden");
 }
 
-// ─── Store Subscription ──────────────────────────────
 let lastConnectionStatus = store.state.connectionStatus;
 store.subscribe(() => {
   const currentStatus = store.state.connectionStatus;
@@ -213,7 +208,6 @@ store.subscribe(() => {
   syncAccountUI();
 });
 
-// ─── Connect button ──────────────────────────────────
 btnConnect.addEventListener("click", async () => {
   const siteUrl = inputSiteUrl.value.trim();
   const email = inputEmail.value.trim();
@@ -254,7 +248,7 @@ btnConnect.addEventListener("click", async () => {
     store.setConnectionStatus("connected");
     showToast(t("connect.connected", { site: siteUrl }), "success");
   } catch (error) {
-    const msg = typeof error === "string" ? error : error instanceof Error ? error.message : "Connection failed";
+    const msg = getErrorMessage(error, "Connection failed");
     connectError.textContent = msg;
     connectError.classList.remove("hidden");
   } finally {
@@ -262,7 +256,6 @@ btnConnect.addEventListener("click", async () => {
   }
 });
 
-// ─── Issue lookup ────────────────────────────────────
 btnLookup.addEventListener("click", async () => {
   const raw = inputIssueKey.value.trim();
   if (!raw) return;
@@ -300,8 +293,7 @@ async function lookupSingle(raw: string) {
     renderCustomFields(issue.fields, targetAvailableFields);
   } catch (error) {
     inputIssueKey.classList.add("input-error");
-    issueError.textContent =
-      typeof error === "string" ? error : error instanceof Error ? error.message : t("clone.issueNotFound");
+    issueError.textContent = getErrorMessage(error, t("clone.issueNotFound"));
     issueError.classList.remove("hidden");
     hide(fetchSuccess);
     hide(cloneConfigSection);
@@ -373,8 +365,7 @@ async function lookupMultiple(raw: string) {
     renderCustomFields(fetchedIssues[0].fields, targetAvailableFields);
   } catch (error) {
     inputIssueKey.classList.add("input-error");
-    issueError.textContent =
-      typeof error === "string" ? error : error instanceof Error ? error.message : t("clone.issueNotFound");
+    issueError.textContent = getErrorMessage(error, t("clone.issueNotFound"));
     issueError.classList.remove("hidden");
     hide(fetchSuccess);
     hide(cloneConfigSection);
@@ -455,7 +446,6 @@ customFieldsFilter.addEventListener("click", (e) => {
   }
 });
 
-// ─── Clone mode toggle ───────────────────────────────
 cloneModeFilter.addEventListener("click", (e) => {
   const btn = (e.target as HTMLElement).closest(".segment") as HTMLButtonElement | null;
   if (!btn) return;
@@ -481,7 +471,6 @@ cloneModeFilter.addEventListener("click", (e) => {
   }
 });
 
-// ─── Project / Issue type loading ────────────────────
 async function loadProjects() {
   try {
     const projects = await fetchProjects();
@@ -494,8 +483,7 @@ async function loadProjects() {
       selectProject.appendChild(opt);
     }
   } catch (error) {
-    const msg = typeof error === "string" ? error : error instanceof Error ? error.message : "Failed to load projects";
-    showError("Projects", msg);
+    showError("Projects", getErrorMessage(error, "Failed to load projects"));
   }
 }
 
@@ -517,9 +505,7 @@ selectProject.addEventListener("change", async () => {
       selectIssueType.appendChild(opt);
     }
   } catch (error) {
-    const msg =
-      typeof error === "string" ? error : error instanceof Error ? error.message : "Failed to load issue types";
-    showError("Issue types", msg);
+    showError("Issue types", getErrorMessage(error, "Failed to load issue types"));
   } finally {
     selectIssueType.disabled = false;
   }
@@ -533,6 +519,20 @@ selectIssueType.addEventListener("change", async () => {
     renderCustomFields(store.state.currentIssue.fields, targetAvailableFields);
   }
 });
+
+function renderMissingFields(fields: Record<string, unknown>, requiredFields: string[]) {
+  const missing = requiredFields.filter((f) => {
+    if (f === "summary") return false;
+    return !(f in fields);
+  });
+
+  if (missing.length > 0) {
+    missingFieldsWarning.textContent = t("clone.missingFields", { fields: missing.join(", ") });
+    show(missingFieldsWarning);
+  } else {
+    hide(missingFieldsWarning);
+  }
+}
 
 async function checkMissingFields() {
   const issueTypeId = selectIssueType.value;
@@ -562,32 +562,11 @@ async function checkMissingFields() {
       store.setIssueTypes(updatedTypes);
     }
 
-    const missing = requiredFields.filter((f) => {
-      if (f === "summary") return false;
-      return !(f in fields);
-    });
-
-    if (missing.length > 0) {
-      missingFieldsWarning.textContent = t("clone.missingFields", { fields: missing.join(", ") });
-      show(missingFieldsWarning);
-    } else {
-      hide(missingFieldsWarning);
-    }
+    renderMissingFields(fields, requiredFields);
   } catch (error) {
     console.error("Failed to load required fields", error);
     const it = store.state.issueTypes.find((t) => t.id === issueTypeId);
-    const requiredFields = it?.required_fields ?? [];
-    const missing = requiredFields.filter((f) => {
-      if (f === "summary") return false;
-      return !(f in fields);
-    });
-
-    if (missing.length > 0) {
-      missingFieldsWarning.textContent = t("clone.missingFields", { fields: missing.join(", ") });
-      show(missingFieldsWarning);
-    } else {
-      hide(missingFieldsWarning);
-    }
+    renderMissingFields(fields, it?.required_fields ?? []);
   }
 }
 
@@ -605,7 +584,6 @@ async function updateTargetFields() {
   }
 }
 
-// ─── Clone execution ─────────────────────────────────
 btnClone.addEventListener("click", async () => {
   const targetProjectKey = selectProject.value;
   const targetIssueTypeId = selectIssueType.value;
@@ -667,38 +645,35 @@ async function cloneSingle(
 ) {
   if (!sourceIssueKey) return;
 
-  try {
-    const unlisten = await listen<ProgressEvent>("clone-progress", (event) => {
-      handleProgress(event.payload);
-    });
+  const unlisten = await listen<ProgressEvent>("clone-progress", (event) => {
+    handleProgress(event.payload);
+  });
 
-    try {
-      const result = await cloneIssue(
-        sourceIssueKey,
-        config.targetProjectKey,
-        config.targetIssueTypeId,
-        config.copyComments,
-        config.copyAttachments,
-        config.copyLinks,
-        config.copySummary,
-        config.copyDescription,
-        config.copyPriority,
-        customFieldKeys,
-      );
-      store.setCloneResult(result);
-      store.setClonePhase("complete");
-      showResult(result);
-      await notify("Nova Clone", t("notification.cloneComplete", { key: result.new_issue_key }));
-    } finally {
-      unlisten();
-    }
+  try {
+    const result = await cloneIssue(
+      sourceIssueKey,
+      config.targetProjectKey,
+      config.targetIssueTypeId,
+      config.copyComments,
+      config.copyAttachments,
+      config.copyLinks,
+      config.copySummary,
+      config.copyDescription,
+      config.copyPriority,
+      customFieldKeys,
+    );
+    store.setCloneResult(result);
+    store.setClonePhase("complete");
+    showResult(result);
+    await notify("Nova Clone", t("notification.cloneComplete", { key: result.new_issue_key }));
   } catch (error) {
     store.setClonePhase("error");
-    const msg = typeof error === "string" ? error : error instanceof Error ? error.message : "Clone failed";
+    const msg = getErrorMessage(error, "Clone failed");
     store.setCloneError(msg);
     showErrorResult(msg);
     await notify("Nova Clone", t("notification.cloneFailed", { error: msg }));
   } finally {
+    unlisten();
     setButtonLoading(btnClone, false, "clone.startClone");
   }
 }
@@ -750,7 +725,7 @@ async function cloneMultiple(
         );
         results.push({ sourceKey, result });
       } catch (error) {
-        const msg = typeof error === "string" ? error : error instanceof Error ? error.message : "Clone failed";
+        const msg = getErrorMessage(error, "Clone failed");
         results.push({ sourceKey, error: msg });
       }
     }
@@ -761,7 +736,7 @@ async function cloneMultiple(
     await notify("Nova Clone", t("notification.cloneMultipleComplete", { success: successCount, total: keys.length }));
   } catch (error) {
     store.setClonePhase("error");
-    const msg = typeof error === "string" ? error : error instanceof Error ? error.message : "Clone failed";
+    const msg = getErrorMessage(error, "Clone failed");
     showErrorResult(msg);
   } finally {
     unlisten();
@@ -830,7 +805,6 @@ function getStepStatus(event: ProgressEvent): string {
   return "...";
 }
 
-// ─── Result display ──────────────────────────────────
 function showResult(result: CloneResult) {
   hide(resultError);
   show(resultSuccess);
@@ -942,7 +916,6 @@ btnRetry.addEventListener("click", () => {
   btnClone.click();
 });
 
-// ─── Settings logic ──────────────────────────────────
 function syncAccountUI() {
   const conn = store.state.connection;
   if (store.state.connectionStatus === "connected" && conn) {
@@ -996,7 +969,6 @@ function initDisconnect() {
   });
 }
 
-// ─── History logic ───────────────────────────────────
 async function renderHistoryList(): Promise<void> {
   let entries: HistoryEntry[];
   try {
@@ -1051,7 +1023,7 @@ async function renderHistoryList(): Promise<void> {
     openBtn.className = "btn btn-sm btn-ghost";
     openBtn.textContent = t("history.open");
     openBtn.addEventListener("click", () => {
-      const site = extractSite(entry);
+      const site = entry.site_url ?? "your-site.atlassian.net";
       const url = site.startsWith("http")
         ? `${site}/browse/${entry.target_key}`
         : `https://${site}/browse/${entry.target_key}`;
@@ -1080,14 +1052,6 @@ function formatTimestamp(iso: string | undefined): string {
   }
 }
 
-function extractSite(entry: HistoryEntry): string {
-  if (entry.site_url) {
-    return entry.site_url;
-  }
-  return "your-site.atlassian.net";
-}
-
-// ─── Init ────────────────────────────────────────────
 async function init() {
   try {
     await setupI18n();
@@ -1100,7 +1064,7 @@ async function init() {
     await checkConnection();
     fetchFieldMetadata().then((meta) => { fieldMetadata = meta; }).catch(() => {});
   } catch (error) {
-    const msg = error instanceof Error ? error.message : "Unknown error";
+    const msg = getErrorMessage(error, "Unknown error");
     showError("Nova Clone", `Init failed: ${msg}`);
   }
 }

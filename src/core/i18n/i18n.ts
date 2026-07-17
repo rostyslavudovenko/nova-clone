@@ -74,7 +74,7 @@ export async function setupI18n(): Promise<void> {
   await loadLocale();
 }
 
-export function updateUI(): void {
+export function updateUI() {
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     const key = el.getAttribute("data-i18n");
     if (!key) return;

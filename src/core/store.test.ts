@@ -68,6 +68,7 @@ describe("store", () => {
     expect(store.state.cloneProgress[1].step).toBe("creating_issue");
   });
 
+  // connection state should survive clone resets
   it("resets clone state without affecting connection", () => {
     store.setConnectionStatus("connected");
     store.setClonePhase("cloning");

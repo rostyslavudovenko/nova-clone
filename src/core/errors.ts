@@ -39,8 +39,14 @@ export class CloneError extends AppError {
   }
 }
 
-export function showError(_title: string, message: string): void {
-  showToast(message, "error", 6000);
+export function showError(title: string, message: string): void {
+  showToast(`${title}: ${message}`, "error", 6000);
+}
+
+export function getErrorMessage(error: unknown, fallback = "Something went wrong"): string {
+  if (typeof error === "string") return error;
+  if (error instanceof Error) return error.message;
+  return fallback;
 }
 
 export async function withRetry<T>(fn: () => Promise<T>, maxRetries = 2, delay = 500): Promise<T> {

@@ -34,28 +34,6 @@ function syncConnectionUI() {
   }
 }
 
-export async function checkConnection() {
-  try {
-    store.setConnectionStatus("connecting");
-    const status = await getConnectionStatus();
-    if (status.connected && status.site_url && status.email) {
-      const connectedAt = (() => {
-        try {
-          return localStorage.getItem("nova-clone-connected-at") ?? undefined;
-        } catch {
-          return undefined;
-        }
-      })();
-      store.setConnection({ siteUrl: status.site_url, email: status.email, connectedAt, avatarUrl: status.avatar_url });
-      store.setConnectionStatus("connected");
-    } else {
-      store.setConnectionStatus("disconnected");
-    }
-  } catch {
-    store.setConnectionStatus("disconnected");
-  }
-}
-
 export function initConnectionUI() {
   ensureRefs();
   syncConnectionUI();
